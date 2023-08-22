@@ -61,14 +61,14 @@ func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
 // @Summary Change user password
 // @Description Change user password by providing required data
 // @Tags User
-// @Param Body body dto.ChangePasswordRequest true "the body to change user's password"
+// @Param Body body dto.UpdatePasswordRequest true "the body to change user's password"
 // @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {object} map[string]any
-// @Router /users/me/update-password [post]
+// @Router /users/me/update-password [put]
 func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
-	var data dto.ChangePasswordRequest
+	var data dto.UpdatePasswordRequest
 	username := c.GetString("username")
 
 	if username == "" {

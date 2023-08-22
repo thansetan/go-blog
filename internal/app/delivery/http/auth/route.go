@@ -2,6 +2,7 @@ package auth
 
 import (
 	authhandler "goproject/internal/app/delivery/http/auth/handler"
+	blogrepository "goproject/internal/app/repository/blog"
 	userrepository "goproject/internal/app/repository/user"
 	authusecase "goproject/internal/app/usecase/auth"
 
@@ -10,8 +11,9 @@ import (
 )
 
 func Route(r *gin.Engine, db *gorm.DB) {
-	repository := userrepository.NewUserRepository(db)
-	usecase := authusecase.NewAuthUsecase(repository)
+	userRepository := userrepository.NewUserRepository(db)
+	blogRepository := blogrepository.NewBlogRepository(db)
+	usecase := authusecase.NewAuthUsecase(userRepository, blogRepository, db)
 	handler := authhandler.NewAuthHandler(usecase)
 
 	auth := r.Group("/auth")

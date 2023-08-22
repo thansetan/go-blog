@@ -9,6 +9,7 @@ import (
 	"goproject/internal/utils"
 
 	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/gorm"
 )
 
 type AuthUsecase interface {
@@ -17,12 +18,16 @@ type AuthUsecase interface {
 }
 
 type AuthUsecaseImpl struct {
-	repo repository.UserRepository
+	userRepo repository.UserRepository
+	blogRepo repository.BlogRepository
+	db       *gorm.DB
 }
 
-func NewAuthUsecase(repo repository.UserRepository) AuthUsecase {
+func NewAuthUsecase(userRepo repository.UserRepository, blogRepo repository.BlogRepository, db *gorm.DB) AuthUsecase {
 	return &AuthUsecaseImpl{
-		repo: repo,
+		userRepo: userRepo,
+		blogRepo: blogRepo,
+		db:       db,
 	}
 }
 
@@ -38,17 +43,35 @@ func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterReques
 		Name:     data.Name,
 		Username: data.Username,
 	}
-	err = uc.repo.Create(ctx, userData)
+
+	blogData := model.Blog{
+		Name:  fmt.Sprintf("%s's Blog", data.Name),
+		Owner: data.Username,
+	}
+
+	// fmt.Println(blogData, userData)
+	tx := uc.db.Begin()
+
+	err = uc.userRepo.Create(ctx, userData, tx)
 	if err != nil {
 		fmt.Println(err)
+		tx.Rollback()
 		return err
 	}
+
+	err = uc.blogRepo.Create(ctx, blogData, tx)
+	if err != nil {
+		fmt.Println(err)
+		tx.Rollback()
+	}
+
+	tx.Commit()
 
 	return nil
 }
 
 func (uc *AuthUsecaseImpl) Login(ctx context.Context, data dto.LoginRequest) (*dto.LoginResponse, error) {
-	user, err := uc.repo.FindByUsername(ctx, data.Username)
+	user, err := uc.userRepo.FindByUsername(ctx, data.Username)
 	if err != nil {
 		return nil, err
 	}

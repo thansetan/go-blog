@@ -19,7 +19,7 @@ func Route(r *gin.Engine, db *gorm.DB) {
 	user.Use(middlewares.JWTAuthMiddleware())
 	{
 		user.GET("/me", handler.GetMyInformation)
-		user.POST("/me/update-password", handler.UpdateMyPassword)
+		user.PUT("/me/update-password", handler.UpdateMyPassword)
 
 	}
 }

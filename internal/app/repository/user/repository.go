@@ -18,8 +18,8 @@ func NewUserRepository(db *gorm.DB) repository.UserRepository {
 	}
 }
 
-func (repo *UserRepositoryImpl) Create(ctx context.Context, data model.User) error {
-	err := repo.db.WithContext(ctx).Create(&data).Error
+func (repo *UserRepositoryImpl) Create(ctx context.Context, data model.User, tx *gorm.DB) error {
+	err := tx.WithContext(ctx).Create(&data).Error
 	return err
 }
 
@@ -33,7 +33,7 @@ func (repo *UserRepositoryImpl) FindByUsername(ctx context.Context, username str
 	return user, nil
 }
 
-func (repo *UserRepositoryImpl) UpdateByUsername(ctx context.Context, data model.User) error {
+func (repo *UserRepositoryImpl) Update(ctx context.Context, data model.User) error {
 	err := repo.db.WithContext(ctx).Updates(data).Error
 	return err
 }

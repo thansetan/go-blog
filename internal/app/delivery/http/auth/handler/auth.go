@@ -25,7 +25,7 @@ func NewAuthHandler(usecase authusecase.AuthUsecase) UserHandler {
 
 // UserRegister godoc
 // @Summary Create a user account
-// @Description Create a new account by providing required data
+// @Description Create a new account by providing required data. This will automatically create a blog named: <name>'s Blog
 // @Tags Auth
 // @Param Body body dto.RegisterRequest true "the body to register a user"
 // @Produce json

@@ -1,11 +1,4 @@
 definitions:
-  dto.ChangePasswordRequest:
-    properties:
-      new_password:
-        type: string
-      old_password:
-        type: string
-    type: object
   dto.LoginRequest:
     properties:
       password:
@@ -22,6 +15,18 @@ definitions:
       password:
         type: string
       username:
+        type: string
+    type: object
+  dto.UpdateBlogRequest:
+    properties:
+      new_name:
+        type: string
+    type: object
+  dto.UpdatePasswordRequest:
+    properties:
+      new_password:
+        type: string
+      old_password:
         type: string
     type: object
 info:
@@ -50,7 +55,8 @@ paths:
       - Auth
   /auth/register:
     post:
-      description: Create a new account by providing required data
+      description: 'Create a new account by providing required data. This will automatically
+        create a blog named: <name>''s Blog'
       parameters:
       - description: the body to register a user
         in: body
@@ -69,6 +75,75 @@ paths:
       summary: Create a user account
       tags:
       - Auth
+  /blog/{username}:
+    get:
+      description: Get information about user blog
+      parameters:
+      - description: Username of the user
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get user blog information
+      tags:
+      - Blog
+  /blog/my:
+    get:
+      description: Get information about my blog
+      parameters:
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Get my blog information
+      tags:
+      - Blog
+    put:
+      description: Change user's blog name by providing required data
+      parameters:
+      - description: the body to change user's blog name
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateBlogRequest'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Change user's blog name
+      tags:
+      - Blog
   /users/me:
     get:
       description: Get user information about current logged in user
@@ -85,7 +160,7 @@ paths:
       tags:
       - User
   /users/me/update-password:
-    post:
+    put:
       description: Change user password by providing required data
       parameters:
       - description: the body to change user's password
@@ -93,7 +168,7 @@ paths:
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/dto.ChangePasswordRequest'
+          $ref: '#/definitions/dto.UpdatePasswordRequest'
       - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
         in: header
         name: Authorization
