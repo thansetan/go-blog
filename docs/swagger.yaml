@@ -1,4 +1,9 @@
 definitions:
+  dto.CommentRequest:
+    properties:
+      comment:
+        type: string
+    type: object
   dto.LoginRequest:
     properties:
       password:
@@ -147,6 +152,144 @@ paths:
       summary: Get a user post by slug
       tags:
       - Post
+  /blog/{username}/posts/{slug}/comments:
+    get:
+      description: Get all comments on a post
+      parameters:
+      - description: blog owner's username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: post slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: objects
+      summary: Get comments on a post
+      tags:
+      - Comment
+    post:
+      description: Create a comment on a blog post by providing required data
+      parameters:
+      - description: the body to create a comment
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CommentRequest'
+      - description: blog owner's username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: post slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: Authorization. Use 'Bearer <your-token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Create a comment on a blog post
+      tags:
+      - Comment
+  /blog/{username}/posts/{slug}/comments/{comment_id}:
+    delete:
+      description: Delete comment by ID
+      parameters:
+      - description: blog owner's username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: post slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      - description: Authorization. Use 'Bearer <your-token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: objects
+      security:
+      - BearerToken: []
+      summary: Delete comment by ID
+      tags:
+      - Comment
+    put:
+      description: Edit user's comment on a post by providing comment ID
+      parameters:
+      - description: blog owner's username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: post slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: body required to modify comment
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CommentRequest'
+      - description: comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      - description: Authorization. Use 'Bearer <your-token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: objects
+      security:
+      - BearerToken: []
+      summary: Edit user's comment on a post
+      tags:
+      - Comment
   /blog/my:
     get:
       description: Get information about my blog
@@ -304,6 +447,27 @@ paths:
       summary: Update user post by slug
       tags:
       - Post
+  /my/comments:
+    get:
+      description: Get current user's comments on all posts
+      parameters:
+      - description: Authorization. Use 'Bearer <your-token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: objects
+      security:
+      - BearerToken: []
+      summary: Get current user's comments
+      tags:
+      - Comment
   /users/me:
     get:
       description: Get user information about current logged in user

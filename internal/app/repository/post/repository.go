@@ -37,9 +37,9 @@ func (repo *PostRepositoryImpl) Update(ctx context.Context, data model.Post) err
 	return err
 }
 
-func (repo *PostRepositoryImpl) FindBySlugAndBlogID(ctx context.Context, slug string, blogID uint) (*model.Post, error) {
+func (repo *PostRepositoryImpl) FindBySlugAndOwner(ctx context.Context, slug, owner string) (*model.Post, error) {
 	post := new(model.Post)
-	err := repo.db.WithContext(ctx).First(post, "title_slug=? AND blog_id=?", slug, blogID).Error
+	err := repo.db.WithContext(ctx).Joins("Blog").First(post, "title_slug=? AND owner=?", slug, owner).Error
 	if err != nil {
 		return nil, err
 	}

@@ -43,6 +43,7 @@ func NewPostgresDB() (*Database, error) {
 		&model.User{},
 		&model.Blog{},
 		&model.Post{},
+		&model.Comment{},
 	)
 	if err != nil {
 		return nil, err

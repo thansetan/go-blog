@@ -79,12 +79,7 @@ func (uc *PostUsecaseImpl) GetPostsByBlogOwner(ctx context.Context, username str
 }
 
 func (uc *PostUsecaseImpl) GetPostBySlug(ctx context.Context, username, slug string) (*dto.PostResponse, error) {
-	blog, err := uc.blogRepo.FindByOwner(ctx, username)
-	if err != nil {
-		return nil, err
-	}
-
-	post, err := uc.postRepo.FindBySlugAndBlogID(ctx, slug, blog.ID)
+	post, err := uc.postRepo.FindBySlugAndOwner(ctx, slug, username)
 	if err != nil {
 		return nil, err
 	}
@@ -100,12 +95,7 @@ func (uc *PostUsecaseImpl) GetPostBySlug(ctx context.Context, username, slug str
 }
 
 func (uc *PostUsecaseImpl) UpdatePostBySlug(ctx context.Context, data dto.PostRequest, username, slug string) error {
-	blog, err := uc.blogRepo.FindByOwner(ctx, username)
-	if err != nil {
-		return err
-	}
-
-	post, err := uc.postRepo.FindBySlugAndBlogID(ctx, slug, blog.ID)
+	post, err := uc.postRepo.FindBySlugAndOwner(ctx, slug, username)
 	if err != nil {
 		return err
 	}
@@ -122,12 +112,7 @@ func (uc *PostUsecaseImpl) UpdatePostBySlug(ctx context.Context, data dto.PostRe
 }
 
 func (uc *PostUsecaseImpl) DeletePostBySlug(ctx context.Context, username, slug string) error {
-	blog, err := uc.blogRepo.FindByOwner(ctx, username)
-	if err != nil {
-		return err
-	}
-
-	post, err := uc.postRepo.FindBySlugAndBlogID(ctx, slug, blog.ID)
+	post, err := uc.postRepo.FindBySlugAndOwner(ctx, slug, username)
 	if err != nil {
 		return err
 	}
