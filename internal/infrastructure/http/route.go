@@ -3,6 +3,7 @@ package httproute
 import (
 	"goproject/internal/app/delivery/http/auth"
 	"goproject/internal/app/delivery/http/blog"
+	"goproject/internal/app/delivery/http/post"
 	"goproject/internal/app/delivery/http/user"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ func NewRoute(db *gorm.DB) *gin.Engine {
 	auth.Route(r, db)
 	user.Route(r, db)
 	blog.Route(r, db)
+	post.Route(r, db)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

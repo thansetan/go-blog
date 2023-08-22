@@ -42,6 +42,7 @@ func NewPostgresDB() (*Database, error) {
 	err = db.AutoMigrate(
 		&model.User{},
 		&model.Blog{},
+		&model.Post{},
 	)
 	if err != nil {
 		return nil, err

@@ -6,6 +6,13 @@ definitions:
       username:
         type: string
     type: object
+  dto.PostRequest:
+    properties:
+      content:
+        type: string
+      title:
+        type: string
+    type: object
   dto.RegisterRequest:
     properties:
       email:
@@ -95,6 +102,51 @@ paths:
       summary: Get user blog information
       tags:
       - Blog
+  /blog/{username}/posts:
+    get:
+      description: Get all user's blog posts by providing username
+      parameters:
+      - description: Username of the user
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all blog posts of a user
+      tags:
+      - Post
+  /blog/{username}/posts/{slug}:
+    get:
+      description: Get a user post by providing their username and the post slug
+      parameters:
+      - description: Username of the user
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Slug of the post
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get a user post by slug
+      tags:
+      - Post
   /blog/my:
     get:
       description: Get information about my blog
@@ -144,6 +196,114 @@ paths:
       summary: Change user's blog name
       tags:
       - Blog
+  /blog/my/posts:
+    get:
+      description: Get all user's blog posts by providing JWT auth
+      parameters:
+      - description: Authorization. Use 'Bearer <your-token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Get all user's blog posts
+      tags:
+      - Post
+    post:
+      description: Create a new blog post by providing required data
+      parameters:
+      - description: the body to create a new post
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PostRequest'
+      - description: Authorization. Use 'Bearer <your-token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Create a new blog post
+      tags:
+      - Post
+  /blog/my/posts/{slug}:
+    delete:
+      description: Delete user blog post by providing the post slug
+      parameters:
+      - description: Authorization. Use 'Bearer <your-token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Slug of the post
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Delete user post by slug
+      tags:
+      - Post
+    put:
+      description: Update user blog post by providing the post slug
+      parameters:
+      - description: Authorization. Use 'Bearer <your-token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: the body to create a new post
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PostRequest'
+      - description: Slug of the post
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Update user post by slug
+      tags:
+      - Post
   /users/me:
     get:
       description: Get user information about current logged in user
