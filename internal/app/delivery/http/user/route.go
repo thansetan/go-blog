@@ -1,0 +1,25 @@
+package user
+
+import (
+	"goproject/internal/app/delivery/http/middlewares"
+	userhandler "goproject/internal/app/delivery/http/user/handler"
+	userrepository "goproject/internal/app/repository/user"
+	userusecase "goproject/internal/app/usecase/user"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+func Route(r *gin.Engine, db *gorm.DB) {
+	repository := userrepository.NewUserRepository(db)
+	usecase := userusecase.NewUserUsecase(repository)
+	handler := userhandler.NewUserHandler(usecase)
+
+	user := r.Group("/users")
+	user.Use(middlewares.JWTAuthMiddleware())
+	{
+		user.GET("/me", handler.GetMyInformation)
+		user.POST("/me/update-password", handler.UpdateMyPassword)
+
+	}
+}

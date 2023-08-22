@@ -1,0 +1,115 @@
+definitions:
+  dto.ChangePasswordRequest:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+    type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/login:
+    post:
+      description: Logging in by providing required data to get JWT
+      parameters:
+      - description: the body to login as a user
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login as a user
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      description: Create a new account by providing required data
+      parameters:
+      - description: the body to register a user
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a user account
+      tags:
+      - Auth
+  /users/me:
+    get:
+      description: Get user information about current logged in user
+      parameters:
+      - description: Authorization. 'Bearer <insert_your_token_here>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Get current user information
+      tags:
+      - User
+  /users/me/update-password:
+    post:
+      description: Change user password by providing required data
+      parameters:
+      - description: the body to change user's password
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChangePasswordRequest'
+      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Change user password
+      tags:
+      - User
+swagger: "2.0"
