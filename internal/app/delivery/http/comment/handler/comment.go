@@ -79,7 +79,7 @@ func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 // @Tags Comment
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /my/comments [get]
 func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
 	username := c.GetString("username")
@@ -113,7 +113,7 @@ func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
 // @Param username path string true "blog owner's username"
 // @Param post_slug path string true "post slug"
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /blog/{username}/posts/{post_slug}/comments [get]
 func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 	blogOwner := c.Param("username")
@@ -143,7 +143,7 @@ func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 // @Param comment_id path int true "comment ID"
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /blog/{username}/posts/{post_slug}/comments/{comment_id} [delete]
 func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 	blogOwner := c.Param("username")
@@ -175,7 +175,7 @@ func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 // @Param comment_id path int true "comment ID"
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /blog/{username}/posts/{post_slug}/comments/{comment_id} [put]
 func (handler *CommentHandlerImpl) EditMyCommentOnAPost(c *gin.Context) {
 	var data dto.CommentRequest

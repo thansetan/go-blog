@@ -38,8 +38,8 @@ func (uc *PostUsecaseImpl) CreateNewPost(ctx context.Context, username string, d
 		Title:   data.Title,
 		Content: data.Content,
 		Slug:    utils.GenerateSlug(data.Title),
-		Author:  blog.User.Name,
-		BlogID:  blog.ID,
+		// Author:  blog.User.Name,
+		BlogID: blog.ID,
 	}
 
 	err = uc.postRepo.Create(ctx, postData)
@@ -68,7 +68,7 @@ func (uc *PostUsecaseImpl) GetPostsByBlogOwner(ctx context.Context, username str
 			Title:     post.Title,
 			Content:   post.Content,
 			Slug:      post.Slug,
-			Author:    post.Author,
+			Author:    post.Blog.User.Name,
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
 		})
@@ -86,7 +86,7 @@ func (uc *PostUsecaseImpl) GetPostBySlug(ctx context.Context, username, slug str
 		Title:     post.Title,
 		Slug:      post.Slug,
 		Content:   post.Content,
-		Author:    post.Author,
+		Author:    post.Blog.User.Name,
 		CreatedAt: post.CreatedAt,
 		UpdatedAt: post.UpdatedAt,
 	}

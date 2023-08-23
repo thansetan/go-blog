@@ -406,7 +406,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -512,7 +513,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -558,7 +560,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -606,7 +609,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -631,7 +635,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -665,7 +670,8 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -699,7 +705,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -739,7 +746,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -771,7 +779,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -812,7 +821,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -837,7 +847,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -993,7 +1004,10 @@ const docTemplate = `{
         "dto.UpdateBlogRequest": {
             "type": "object",
             "properties": {
-                "new_name": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

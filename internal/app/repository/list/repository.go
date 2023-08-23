@@ -53,7 +53,7 @@ func (repo *ListRepositoryImpl) FindListByOwnerAndListSlug(ctx context.Context, 
 
 func (repo *ListRepositoryImpl) FindPostsInAListByListSlug(ctx context.Context, username string, listSlug string) (*model.List, error) {
 	list := new(model.List)
-	err := repo.db.WithContext(ctx).Preload("Posts").First(&list, "owner=? AND slug=?", username, listSlug).Error
+	err := repo.db.WithContext(ctx).Preload("Posts.Blog.User").Preload("Posts").First(&list, "owner=? AND slug=?", username, listSlug).Error
 	if err != nil {
 		return nil, err
 	}

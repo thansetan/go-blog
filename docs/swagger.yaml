@@ -38,7 +38,9 @@ definitions:
     type: object
   dto.UpdateBlogRequest:
     properties:
-      new_name:
+      description:
+        type: string
+      name:
         type: string
     type: object
   dto.UpdatePasswordRequest:
@@ -189,7 +191,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       summary: Get comments on a post
       tags:
       - Comment
@@ -250,7 +253,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Delete comment by ID
@@ -286,7 +290,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Edit user's comment on a post
@@ -317,7 +322,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Add post to my list
@@ -457,7 +463,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Get current user's lists
@@ -478,7 +485,8 @@ paths:
         "201":
           description: Created
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Create a new list for user
@@ -499,7 +507,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Delete current user's list by ID
@@ -519,7 +528,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Get posts in my list
@@ -545,7 +555,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Update current user's list by ID
@@ -572,7 +583,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Remove post from current user's list
@@ -587,7 +599,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: objects
+            additionalProperties: true
+            type: object
       security:
       - BearerToken: []
       summary: Get current user's comments

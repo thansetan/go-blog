@@ -27,7 +27,8 @@ func (uc *BlogUsecaseImpl) UpdateBlogName(ctx context.Context, username string, 
 		return err
 	}
 
-	blog.Name = data.NewName
+	blog.Name = data.Name
+	blog.Description = data.Description
 
 	err = uc.repo.Update(ctx, *blog)
 	if err != nil {
@@ -44,8 +45,9 @@ func (uc *BlogUsecaseImpl) GetBlogByOwner(ctx context.Context, owner string) (*d
 	}
 
 	data := dto.BlogResponse{
-		Name:  blog.Name,
-		Owner: blog.Owner,
+		Name:        blog.Name,
+		Owner:       blog.Owner,
+		Description: blog.Description,
 	}
 	return &data, nil
 }

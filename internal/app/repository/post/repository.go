@@ -25,7 +25,7 @@ func (repo *PostRepositoryImpl) Create(ctx context.Context, data model.Post) err
 
 func (repo *PostRepositoryImpl) FindByBlogID(ctx context.Context, blogID uint) ([]model.Post, error) {
 	var posts []model.Post
-	err := repo.db.WithContext(ctx).Find(&posts, "blog_id=?", blogID).Error
+	err := repo.db.WithContext(ctx).Joins("Blog.User").Find(&posts, "blog_id=?", blogID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (repo *PostRepositoryImpl) Update(ctx context.Context, data model.Post) err
 
 func (repo *PostRepositoryImpl) FindBySlugAndOwner(ctx context.Context, slug, owner string) (*model.Post, error) {
 	post := new(model.Post)
-	err := repo.db.WithContext(ctx).Joins("Blog").First(post, "slug=? AND owner=?", slug, owner).Error
+	err := repo.db.WithContext(ctx).Joins("Blog.User").Joins("Blog").First(post, "slug=? AND owner=?", slug, owner).Error
 	if err != nil {
 		return nil, err
 	}

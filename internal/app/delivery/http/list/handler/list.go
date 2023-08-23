@@ -35,7 +35,7 @@ func NewListHandler(uc listusecase.ListUsecase) ListHandler {
 // @Param Body body dto.ListRequest true "body required to create a new list"
 // @Security BearerToken
 // @Produce json
-// @Success 201 {objects} map[string]any
+// @Success 201 {object} map[string]any
 // @Router /lists/my [post]
 func (handler *ListHandlerImpl) CreateNewList(c *gin.Context) {
 	var data dto.ListRequest
@@ -81,7 +81,7 @@ func (handler *ListHandlerImpl) CreateNewList(c *gin.Context) {
 // @Param list_slug path string true "list slug you want to add this post to"
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /blog/{username}/posts/{post_slug}/save/{list_slug} [post]
 func (handler *ListHandlerImpl) AddPostToMyList(c *gin.Context) {
 	username := c.GetString("username")
@@ -118,7 +118,7 @@ func (handler *ListHandlerImpl) AddPostToMyList(c *gin.Context) {
 // @Param list_slug path string true "list slug you want to get"
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /lists/my/{list_slug} [get]
 func (handler *ListHandlerImpl) GetPostsInMyListBySlug(c *gin.Context) {
 	username := c.GetString("username")
@@ -153,7 +153,7 @@ func (handler *ListHandlerImpl) GetPostsInMyListBySlug(c *gin.Context) {
 // @Tags List
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /lists/my [get]
 func (handler *ListHandlerImpl) GetMyLists(c *gin.Context) {
 	username := c.GetString("username")
@@ -189,7 +189,7 @@ func (handler *ListHandlerImpl) GetMyLists(c *gin.Context) {
 // @Param body body dto.ListRequest strue "body to update"
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /lists/my/{list_slug} [PUT]
 func (handler *ListHandlerImpl) UpdateMyListInformationBySlug(c *gin.Context) {
 	var data dto.ListRequest
@@ -235,7 +235,7 @@ func (handler *ListHandlerImpl) UpdateMyListInformationBySlug(c *gin.Context) {
 // @Param post_slug path string true "post slug you want to delete"
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /lists/my/{list_slug}/{post_slug} [DELETE]
 func (handler *ListHandlerImpl) RemovePostFromMyList(c *gin.Context) {
 	username := c.GetString("username")
@@ -271,7 +271,7 @@ func (handler *ListHandlerImpl) RemovePostFromMyList(c *gin.Context) {
 // @Param list_slug path string true "list slug you want to remove"
 // @Security BearerToken
 // @Produce json
-// @Success 200 {objects} map[string]any
+// @Success 200 {object} map[string]any
 // @Router /lists/my/{list_slug} [DELETE]
 func (handler *ListHandlerImpl) DeleteMyListBySlug(c *gin.Context) {
 	username := c.GetString("username")

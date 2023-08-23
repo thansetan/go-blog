@@ -1,13 +1,16 @@
 package model
 
-import "gorm.io/gorm"
+import "time"
 
 type List struct {
-	gorm.Model
-	Name        string `gorm:"not null"`
-	Slug        string `gorm:"not null;index"`
+	ID          uint   `gorm:"primaryKey"`
+	Name        string `gorm:"not null;type:varchar(255)"`
+	Slug        string `gorm:"not null;index;type:varchar(510)"`
 	Description string `gorm:"type:text"`
-	Owner       string `gorm:"not null"`
+	Owner       string `gorm:"not null;type:varchar(255)"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 
 	User      User   `gorm:"foreignKey:Owner; references:Username"`
 	Posts     []Post `gorm:"many2many:list_posts"`

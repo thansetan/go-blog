@@ -1,10 +1,12 @@
 package dto
 
 type UpdateBlogRequest struct {
-	NewName string `json:"new_name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type BlogResponse struct {
-	Name  string `json:"name"`
-	Owner string `json:"blog_owner"`
+	Name        string `json:"blog_name"`
+	Description string `json:"blog_description"`
+	Owner       string `json:"blog_owner"`
 }

@@ -1,14 +1,17 @@
 package model
 
-import "gorm.io/gorm"
+import "time"
 
 type Post struct {
-	gorm.Model
-	Title   string `gorm:"not null"`
-	Slug    string `gorm:"not null; index"`
-	Content string `gorm:"not null; type:text"`
-	Author  string `gorm:"not null"`
-	BlogID  uint   `gorm:"not null; index"`
+	ID      uint   `gorm:"primaryKey"`
+	Title   string `gorm:"not null;type:varchar(255)"`
+	Slug    string `gorm:"not null;index;type:varchar(510)"`
+	Content string `gorm:"not null;type:text"`
+	// Author  string `gorm:"not null;type:varchar(255)"`
+	BlogID uint `gorm:"not null;index"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 
 	Blog Blog `gorm:"foreignKey:BlogID; references:ID"`
 }

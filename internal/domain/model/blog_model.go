@@ -1,11 +1,15 @@
 package model
 
-import "gorm.io/gorm"
+import "time"
 
 type Blog struct {
-	gorm.Model
-	Name  string `gorm:"not null"`
-	Owner string `gorm:"uniqueIndex; not null"`
+	ID          uint   `gorm:"primaryKey"`
+	Name        string `gorm:"not null;type:varchar(255)"`
+	Description string `gorm:"type:text"`
+	Owner       string `gorm:"uniqueIndex;not null;type:varchar(255)"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 
 	User User `gorm:"foreignKey:Owner;references:Username"`
 }

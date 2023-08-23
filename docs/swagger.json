@@ -397,7 +397,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -503,7 +504,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -549,7 +551,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -597,7 +600,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -622,7 +626,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -656,7 +661,8 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -690,7 +696,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -730,7 +737,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -762,7 +770,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -803,7 +812,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -828,7 +838,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "objects"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -984,7 +995,10 @@
         "dto.UpdateBlogRequest": {
             "type": "object",
             "properties": {
-                "new_name": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

@@ -86,7 +86,7 @@ func (uc *ListUsecaseImpl) GetPostsInAListBySlug(ctx context.Context, listSlug, 
 			Title:     post.Title,
 			Content:   post.Content,
 			Slug:      post.Slug,
-			Author:    post.Author,
+			Author:    post.Blog.User.Name,
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
 		})
