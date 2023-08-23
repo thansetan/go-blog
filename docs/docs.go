@@ -95,15 +95,6 @@ const docTemplate = `{
                     "Blog"
                 ],
                 "summary": "Get my blog information",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -137,13 +128,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateBlogRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -172,15 +156,6 @@ const docTemplate = `{
                     "Post"
                 ],
                 "summary": "Get all user's blog posts",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -214,13 +189,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.PostRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -250,13 +218,6 @@ const docTemplate = `{
                 ],
                 "summary": "Update user post by slug",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "the body to create a new post",
                         "name": "Body",
@@ -299,13 +260,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete user post by slug",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Slug of the post",
@@ -494,13 +448,6 @@ const docTemplate = `{
                         "name": "post_slug",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -559,13 +506,6 @@ const docTemplate = `{
                         "name": "comment_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -611,13 +551,6 @@ const docTemplate = `{
                         "description": "comment ID",
                         "name": "comment_id",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -667,13 +600,6 @@ const docTemplate = `{
                         "name": "list_slug",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -701,15 +627,6 @@ const docTemplate = `{
                     "List"
                 ],
                 "summary": "Get current user's lists",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -742,13 +659,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.ListRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -782,13 +692,6 @@ const docTemplate = `{
                         "description": "list slug you want to get",
                         "name": "list_slug",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -830,13 +733,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.ListRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -868,13 +764,6 @@ const docTemplate = `{
                         "description": "list slug you want to remove",
                         "name": "list_slug",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -917,13 +806,6 @@ const docTemplate = `{
                         "name": "post_slug",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -951,15 +833,6 @@ const docTemplate = `{
                     "Comment"
                 ],
                 "summary": "Get current user's comments",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -982,16 +855,42 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Get current user information",
-                "parameters": [
+                "responses": {}
+            },
+            "put": {
+                "security": [
                     {
-                        "type": "string",
-                        "description": "Authorization. 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "BearerToken": []
                     }
                 ],
-                "responses": {}
+                "description": "Update current user's information by providing required data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update current user's information",
+                "parameters": [
+                    {
+                        "description": "the body to update user's information",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserUpdateInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
             }
         },
         "/users/me/update-password": {
@@ -1018,13 +917,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdatePasswordRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -1116,18 +1008,37 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "dto.UserUpdateInfoRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerToken": {
+            "description": "JWT Bearer Token. Need to Login to get the token. Usage: \"Bearer \u003cyour-token-here\u003e\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Go-Blog",
+	Description:      "A simple medium-like blog API, writen in Go",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

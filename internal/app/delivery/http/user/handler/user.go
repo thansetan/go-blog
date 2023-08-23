@@ -11,6 +11,7 @@ import (
 type UserHandler interface {
 	GetMyInformation(c *gin.Context)
 	UpdateMyPassword(c *gin.Context)
+	UpdateMyInformation(c *gin.Context)
 }
 
 type UserHandlerImpl struct {
@@ -27,7 +28,6 @@ func NewUserHandler(usecase userusecase.UserUsecase) UserHandler {
 // @Summary Get current user information
 // @Description Get user information about current logged in user
 // @Tags User
-// @Param Authorization header string true "Authorization. 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Product 200 {object} map[string]any
 // @Router /users/me [get]
@@ -62,7 +62,6 @@ func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
 // @Description Change user password by providing required data
 // @Tags User
 // @Param Body body dto.UpdatePasswordRequest true "the body to change user's password"
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {object} map[string]any
@@ -90,6 +89,50 @@ func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
 	err = handler.uc.ChangePasswordByUsername(c, username, data)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
+}
+
+// UpdateMyInformation godoc
+// @Summary Update current user's information
+// @Description Update current user's information by providing required data
+// @Tags User
+// @Param Body body dto.UserUpdateInfoRequest true "the body to update user's information"
+// @Security BearerToken
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Router /users/me [put]
+func (handler *UserHandlerImpl) UpdateMyInformation(c *gin.Context) {
+	var data dto.UserUpdateInfoRequest
+	username := c.GetString("username")
+
+	if username == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"error":   "username not provided",
+		})
+		return
+	}
+
+	err := c.ShouldBindJSON(&data)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = handler.uc.UpdateUserInformation(c, username, data)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"error":   err.Error(),
 		})

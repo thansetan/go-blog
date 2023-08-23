@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Route(r *gin.Engine, db *gorm.DB) {
+func Route(r *gin.RouterGroup, db *gorm.DB) {
 	userRepository := userrepository.NewUserRepository(db)
 	blogRepository := blogrepository.NewBlogRepository(db)
 	usecase := authusecase.NewAuthUsecase(userRepository, blogRepository, db)

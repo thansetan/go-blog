@@ -33,7 +33,6 @@ func NewCommentHandler(uc commentusecase.CommentUsecase) CommentHandler {
 // @Param Body body dto.CommentRequest true "the body to create a comment"
 // @Param username path string true "blog owner's username"
 // @Param post_slug path string true "post slug"
-// @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 201 {object} map[string]any
@@ -78,7 +77,6 @@ func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 // @Summary Get current user's comments
 // @Description Get current user's comments on all posts
 // @Tags Comment
-// @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
@@ -143,7 +141,6 @@ func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 // @Param username path string true "blog owner's username"
 // @Param post_slug path string true "post slug"
 // @Param comment_id path int true "comment ID"
-// @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
@@ -176,7 +173,6 @@ func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 // @Param post_slug path string true "post slug"
 // @Param Body body dto.CommentRequest true "body required to modify comment"
 // @Param comment_id path int true "comment ID"
-// @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any

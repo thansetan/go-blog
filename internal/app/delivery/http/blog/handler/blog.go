@@ -29,7 +29,6 @@ func NewBlogHandler(uc blogusecase.BlogUsecase) BlogHandler {
 // @Description Change user's blog name by providing required data
 // @Tags Blog
 // @Param Body body dto.UpdateBlogRequest true "the body to change user's blog name"
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {object} map[string]any
@@ -71,7 +70,6 @@ func (handler *BlogHandlerImpl) UpdateMyBlogName(c *gin.Context) {
 // @Summary Get my blog information
 // @Description Get information about my blog
 // @Tags Blog
-// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {object} map[string]any

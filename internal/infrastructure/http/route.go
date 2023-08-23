@@ -16,13 +16,14 @@ import (
 
 func NewRoute(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
+	api := r.Group("/api/v1")
 
-	auth.Route(r, db)
-	user.Route(r, db)
-	blog.Route(r, db)
-	post.Route(r, db)
-	comment.Route(r, db)
-	list.Route(r, db)
+	auth.Route(api, db)
+	user.Route(api, db)
+	blog.Route(api, db)
+	post.Route(api, db)
+	comment.Route(api, db)
+	list.Route(api, db)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

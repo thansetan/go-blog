@@ -33,7 +33,6 @@ func NewListHandler(uc listusecase.ListUsecase) ListHandler {
 // @Description Create a new list for user by providing required data
 // @Tags List
 // @Param Body body dto.ListRequest true "body required to create a new list"
-// @Param Authorization header string true "Authorization. Use 'Bearer <token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 201 {objects} map[string]any
@@ -80,7 +79,6 @@ func (handler *ListHandlerImpl) CreateNewList(c *gin.Context) {
 // @Param username path string true "blog owner's username"
 // @Param post_slug path string true "post slug"
 // @Param list_slug path string true "list slug you want to add this post to"
-// @Param Authorization header string true "Authorization. Use 'Bearer <token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
@@ -118,7 +116,6 @@ func (handler *ListHandlerImpl) AddPostToMyList(c *gin.Context) {
 // @Description Get posts in my list by providing required data
 // @Tags List
 // @Param list_slug path string true "list slug you want to get"
-// @Param Authorization header string true "Authorization. Use 'Bearer <token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
@@ -154,7 +151,6 @@ func (handler *ListHandlerImpl) GetPostsInMyListBySlug(c *gin.Context) {
 // @Summary Get current user's lists
 // @Description Get current user's lists by providing required data
 // @Tags List
-// @Param Authorization header string true "Authorization. Use 'Bearer <token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
@@ -191,7 +187,6 @@ func (handler *ListHandlerImpl) GetMyLists(c *gin.Context) {
 // @Tags List
 // @Param list_slug path string true "list slug you want to edit"
 // @Param body body dto.ListRequest strue "body to update"
-// @Param Authorization header string true "Authorization. Use 'Bearer <token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
@@ -238,7 +233,6 @@ func (handler *ListHandlerImpl) UpdateMyListInformationBySlug(c *gin.Context) {
 // @Tags List
 // @Param list_slug path string true "list slug you want to remove post from"
 // @Param post_slug path string true "post slug you want to delete"
-// @Param Authorization header string true "Authorization. Use 'Bearer <token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
@@ -275,7 +269,6 @@ func (handler *ListHandlerImpl) RemovePostFromMyList(c *gin.Context) {
 // @Description Delete current user's list by providing the list ID
 // @Tags List
 // @Param list_slug path string true "list slug you want to remove"
-// @Param Authorization header string true "Authorization. Use 'Bearer <token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any

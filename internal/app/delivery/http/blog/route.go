@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Route(r *gin.Engine, db *gorm.DB) {
+func Route(r *gin.RouterGroup, db *gorm.DB) {
 	repository := blogrepository.NewBlogRepository(db)
 	usecase := blogusecase.NewBlogUsecase(repository)
 	handler := bloghandler.NewBlogHandler(usecase)

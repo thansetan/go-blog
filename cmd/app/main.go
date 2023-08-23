@@ -11,12 +11,23 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// @title Go-Blog
+// @version 1.0
+// @description A simple medium-like blog API, writen in Go
+
+// @securityDefinitions.apikey BearerToken
+// @in header
+// @name Authorization
+// @scheme bearer
+// @bearerFormat JWT
+// @description JWT Bearer Token. Need to Login to get the token. Usage: "Bearer <your-token-here>"
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		panic(err)
 	}
 
+	host := os.Getenv("HOST")
 	port := os.Getenv("HTTP_PORT")
 
 	db, err := database.NewPostgresDB()
@@ -24,11 +35,10 @@ func main() {
 		panic(err)
 	}
 
-	docs.SwaggerInfo.Title = "Sanbercode Final Project"
-	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", host, port)
+	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := httproute.NewRoute(db.DB)
-	r.Run(fmt.Sprintf(":%s", port))
-
+	r.Run(fmt.Sprintf("%s:%s", host, port))
 }

@@ -10,6 +10,7 @@ import (
 type UserUsecase interface {
 	GetUserDataByUsername(ctx context.Context, username string) (*dto.UserResponse, error)
 	ChangePasswordByUsername(ctx context.Context, username string, data dto.UpdatePasswordRequest) error
+	UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) error
 }
 
 type UserUsecaseImpl struct {
@@ -59,5 +60,22 @@ func (uc *UserUsecaseImpl) ChangePasswordByUsername(ctx context.Context, usernam
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (uc *UserUsecaseImpl) UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) error {
+	user, err := uc.repo.FindByUsername(ctx, username)
+	if err != nil {
+		return err
+	}
+
+	user.Name = data.Name
+	user.Email = data.Email
+
+	err = uc.repo.Update(ctx, *user)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Route(r *gin.Engine, db *gorm.DB) {
+func Route(r *gin.RouterGroup, db *gorm.DB) {
 	listRepository := listrepository.NewListRepository(db)
 	postRepository := postrepository.NewPostRepository(db)
 	usecase := listusecase.NewListUsecase(listRepository, postRepository)

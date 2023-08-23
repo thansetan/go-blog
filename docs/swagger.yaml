@@ -48,8 +48,18 @@ definitions:
       old_password:
         type: string
     type: object
+  dto.UserUpdateInfoRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact: {}
+  description: A simple medium-like blog API, writen in Go
+  title: Go-Blog
+  version: "1.0"
 paths:
   /auth/login:
     post:
@@ -202,11 +212,6 @@ paths:
         name: post_slug
         required: true
         type: string
-      - description: Authorization. Use 'Bearer <your-token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -239,11 +244,6 @@ paths:
         name: comment_id
         required: true
         type: integer
-      - description: Authorization. Use 'Bearer <your-token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -280,11 +280,6 @@ paths:
         name: comment_id
         required: true
         type: integer
-      - description: Authorization. Use 'Bearer <your-token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -316,11 +311,6 @@ paths:
         name: list_slug
         required: true
         type: string
-      - description: Authorization. Use 'Bearer <token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -336,12 +326,6 @@ paths:
   /blog/my:
     get:
       description: Get information about my blog
-      parameters:
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -364,11 +348,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.UpdateBlogRequest'
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -385,12 +364,6 @@ paths:
   /blog/my/posts:
     get:
       description: Get all user's blog posts by providing JWT auth
-      parameters:
-      - description: Authorization. Use 'Bearer <your-token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -413,11 +386,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.PostRequest'
-      - description: Authorization. Use 'Bearer <your-token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -435,11 +403,6 @@ paths:
     delete:
       description: Delete user blog post by providing the post slug
       parameters:
-      - description: Authorization. Use 'Bearer <your-token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Slug of the post
         in: path
         name: post_slug
@@ -461,11 +424,6 @@ paths:
     put:
       description: Update user blog post by providing the post slug
       parameters:
-      - description: Authorization. Use 'Bearer <your-token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: the body to create a new post
         in: body
         name: Body
@@ -493,12 +451,6 @@ paths:
   /lists/my:
     get:
       description: Get current user's lists by providing required data
-      parameters:
-      - description: Authorization. Use 'Bearer <token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -520,11 +472,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.ListRequest'
-      - description: Authorization. Use 'Bearer <token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -546,11 +493,6 @@ paths:
         name: list_slug
         required: true
         type: string
-      - description: Authorization. Use 'Bearer <token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -569,11 +511,6 @@ paths:
       - description: list slug you want to get
         in: path
         name: list_slug
-        required: true
-        type: string
-      - description: Authorization. Use 'Bearer <token>'
-        in: header
-        name: Authorization
         required: true
         type: string
       produces:
@@ -602,11 +539,6 @@ paths:
         name: body
         schema:
           $ref: '#/definitions/dto.ListRequest'
-      - description: Authorization. Use 'Bearer <token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -634,11 +566,6 @@ paths:
         name: post_slug
         required: true
         type: string
-      - description: Authorization. Use 'Bearer <token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -654,12 +581,6 @@ paths:
   /my/comments:
     get:
       description: Get current user's comments on all posts
-      parameters:
-      - description: Authorization. Use 'Bearer <your-token>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -675,16 +596,32 @@ paths:
   /users/me:
     get:
       description: Get user information about current logged in user
-      parameters:
-      - description: Authorization. 'Bearer <insert_your_token_here>'
-        in: header
-        name: Authorization
-        required: true
-        type: string
       responses: {}
       security:
       - BearerToken: []
       summary: Get current user information
+      tags:
+      - User
+    put:
+      description: Update current user's information by providing required data
+      parameters:
+      - description: the body to update user's information
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserUpdateInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerToken: []
+      summary: Update current user's information
       tags:
       - User
   /users/me/update-password:
@@ -697,11 +634,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.UpdatePasswordRequest'
-      - description: 'Authorization. How to input in swagger : ''Bearer <insert_your_token_here>'''
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -715,4 +647,11 @@ paths:
       summary: Change user password
       tags:
       - User
+securityDefinitions:
+  BearerToken:
+    description: 'JWT Bearer Token. Need to Login to get the token. Usage: "Bearer
+      <your-token-here>"'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

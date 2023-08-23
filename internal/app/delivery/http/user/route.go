@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Route(r *gin.Engine, db *gorm.DB) {
+func Route(r *gin.RouterGroup, db *gorm.DB) {
 	repository := userrepository.NewUserRepository(db)
 	usecase := userusecase.NewUserUsecase(repository)
 	handler := userhandler.NewUserHandler(usecase)
@@ -19,6 +19,7 @@ func Route(r *gin.Engine, db *gorm.DB) {
 	user.Use(middlewares.JWTAuthMiddleware())
 	{
 		user.GET("/me", handler.GetMyInformation)
+		user.PUT("/me", handler.UpdateMyInformation)
 		user.PUT("/me/update-password", handler.UpdateMyPassword)
 
 	}

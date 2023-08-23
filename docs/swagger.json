@@ -1,7 +1,10 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "A simple medium-like blog API, writen in Go",
+        "title": "Go-Blog",
+        "contact": {},
+        "version": "1.0"
     },
     "paths": {
         "/auth/login": {
@@ -83,15 +86,6 @@
                     "Blog"
                 ],
                 "summary": "Get my blog information",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -125,13 +119,6 @@
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateBlogRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -160,15 +147,6 @@
                     "Post"
                 ],
                 "summary": "Get all user's blog posts",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -202,13 +180,6 @@
                         "schema": {
                             "$ref": "#/definitions/dto.PostRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -238,13 +209,6 @@
                 ],
                 "summary": "Update user post by slug",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "the body to create a new post",
                         "name": "Body",
@@ -287,13 +251,6 @@
                 ],
                 "summary": "Delete user post by slug",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Slug of the post",
@@ -482,13 +439,6 @@
                         "name": "post_slug",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -547,13 +497,6 @@
                         "name": "comment_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -599,13 +542,6 @@
                         "description": "comment ID",
                         "name": "comment_id",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -655,13 +591,6 @@
                         "name": "list_slug",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -689,15 +618,6 @@
                     "List"
                 ],
                 "summary": "Get current user's lists",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -730,13 +650,6 @@
                         "schema": {
                             "$ref": "#/definitions/dto.ListRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -770,13 +683,6 @@
                         "description": "list slug you want to get",
                         "name": "list_slug",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -818,13 +724,6 @@
                         "schema": {
                             "$ref": "#/definitions/dto.ListRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -856,13 +755,6 @@
                         "description": "list slug you want to remove",
                         "name": "list_slug",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -905,13 +797,6 @@
                         "name": "post_slug",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -939,15 +824,6 @@
                     "Comment"
                 ],
                 "summary": "Get current user's comments",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -970,16 +846,42 @@
                     "User"
                 ],
                 "summary": "Get current user information",
-                "parameters": [
+                "responses": {}
+            },
+            "put": {
+                "security": [
                     {
-                        "type": "string",
-                        "description": "Authorization. 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "BearerToken": []
                     }
                 ],
-                "responses": {}
+                "description": "Update current user's information by providing required data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update current user's information",
+                "parameters": [
+                    {
+                        "description": "the body to update user's information",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserUpdateInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
             }
         },
         "/users/me/update-password": {
@@ -1006,13 +908,6 @@
                         "schema": {
                             "$ref": "#/definitions/dto.UpdatePasswordRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization. How to input in swagger : 'Bearer \u003cinsert_your_token_here\u003e'",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -1104,6 +999,25 @@
                     "type": "string"
                 }
             }
+        },
+        "dto.UserUpdateInfoRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerToken": {
+            "description": "JWT Bearer Token. Need to Login to get the token. Usage: \"Bearer \u003cyour-token-here\u003e\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

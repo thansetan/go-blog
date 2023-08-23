@@ -32,7 +32,6 @@ func NewPostHandler(uc postusecase.PostUsecase) PostHandler {
 // @Description Create a new blog post by providing required data
 // @Tags Post
 // @Param Body body dto.PostRequest true "the body to create a new post"
-// @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 201 {object} map[string]any
@@ -74,7 +73,6 @@ func (handler *PostHandlerImpl) CreateNewPost(c *gin.Context) {
 // @Summary Get all user's blog posts
 // @Description Get all user's blog posts by providing JWT auth
 // @Tags Post
-// @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {object} map[string]any
@@ -159,7 +157,6 @@ func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
 // @Summary Update user post by slug
 // @Description Update user blog post by providing the post slug
 // @Tags Post
-// @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Param Body body dto.PostRequest true "the body to create a new post"
 // @Param post_slug path string true "Slug of the post"
@@ -206,7 +203,6 @@ func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 // @Summary Delete user post by slug
 // @Description Delete user blog post by providing the post slug
 // @Tags Post
-// @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Param post_slug path string true "Slug of the post"
 // @Produce json
