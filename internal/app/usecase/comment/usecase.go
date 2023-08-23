@@ -61,7 +61,7 @@ func (uc *CommentUsecaseImpl) GetCommentByUsername(ctx context.Context, username
 	for _, comment := range comments {
 		commentsData = append(commentsData, dto.CommentResponse{
 			ID:        comment.ID,
-			PostURL:   fmt.Sprintf("blog/%s/posts/%s", comment.Post.Blog.Owner, comment.Post.TitleSlug),
+			PostURL:   fmt.Sprintf("blog/%s/posts/%s", comment.Post.Blog.Owner, comment.Post.Slug),
 			Comment:   comment.Content,
 			CreatedAt: comment.CreatedAt,
 			UpdatedAt: comment.UpdatedAt,

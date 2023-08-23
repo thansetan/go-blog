@@ -40,10 +40,12 @@ func NewPostgresDB() (*Database, error) {
 	}
 
 	err = db.AutoMigrate(
+		&model.List{},
 		&model.User{},
 		&model.Blog{},
 		&model.Post{},
 		&model.Comment{},
+		&model.ListPost{},
 	)
 	if err != nil {
 		return nil, err

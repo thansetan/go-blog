@@ -18,13 +18,13 @@ func Route(r *gin.Engine, db *gorm.DB) {
 	handler := posthandler.NewPostHandler(usecase)
 
 	r.GET("/blog/:username/posts", handler.GetPostsByBlogOwner)
-	r.GET("/blog/:username/posts/:slug", handler.GetPostBySlug)
+	r.GET("/blog/:username/posts/:post_slug", handler.GetPostBySlug)
 
 	post := r.Group("/blog/my/posts", middlewares.JWTAuthMiddleware())
 	{
 		post.POST("", handler.CreateNewPost)
 		post.GET("", handler.GetAllMyBlogPosts)
-		post.PUT("/:slug", handler.UpdateMyPostBySlug)
-		post.DELETE("/:slug", handler.DeleteMyPostBySlug)
+		post.PUT("/:post_slug", handler.UpdateMyPostBySlug)
+		post.DELETE("/:post_slug", handler.DeleteMyPostBySlug)
 	}
 }

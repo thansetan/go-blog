@@ -18,7 +18,7 @@ func Route(r *gin.Engine, db *gorm.DB) {
 	handler := commenthandler.NewCommentHandler(usecase)
 
 	r.GET("/my/comments", middlewares.JWTAuthMiddleware(), handler.GetMyComments)
-	comment := r.Group("/blog/:username/posts/:slug/comments")
+	comment := r.Group("/blog/:username/posts/:post_slug/comments")
 	{
 		comment.POST("", middlewares.JWTAuthMiddleware(), handler.CreateComment)
 		comment.GET("", handler.GetCommentsOnAPost)

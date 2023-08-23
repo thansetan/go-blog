@@ -134,12 +134,12 @@ func (handler *PostHandlerImpl) GetPostsByBlogOwner(c *gin.Context) {
 // @Description Get a user post by providing their username and the post slug
 // @Tags Post
 // @Param username path string true "Username of the user"
-// @Param slug path string true "Slug of the post"
+// @Param post_slug path string true "Slug of the post"
 // @Produce json
 // @Success 200 {object} map[string]any
-// @Router /blog/{username}/posts/{slug} [GET]
+// @Router /blog/{username}/posts/{post_slug} [GET]
 func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
-	slug := c.Param("slug")
+	slug := c.Param("post_slug")
 	username := c.Param("username")
 	post, err := handler.uc.GetPostBySlug(c, username, slug)
 	if err != nil {
@@ -162,13 +162,13 @@ func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
 // @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Param Body body dto.PostRequest true "the body to create a new post"
-// @Param slug path string true "Slug of the post"
+// @Param post_slug path string true "Slug of the post"
 // @Produce json
 // @Success 200 {object} map[string]any
-// @Router /blog/my/posts/{slug} [PUT]
+// @Router /blog/my/posts/{post_slug} [PUT]
 func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 	var data dto.PostRequest
-	slug := c.Param("slug")
+	slug := c.Param("post_slug")
 	username := c.GetString("username")
 
 	if username == "" {
@@ -208,12 +208,12 @@ func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 // @Tags Post
 // @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
-// @Param slug path string true "Slug of the post"
+// @Param post_slug path string true "Slug of the post"
 // @Produce json
 // @Success 200 {object} map[string]any
-// @Router /blog/my/posts/{slug} [DELETE]
+// @Router /blog/my/posts/{post_slug} [DELETE]
 func (handler *PostHandlerImpl) DeleteMyPostBySlug(c *gin.Context) {
-	slug := c.Param("slug")
+	slug := c.Param("post_slug")
 	username := c.GetString("username")
 
 	if username == "" {

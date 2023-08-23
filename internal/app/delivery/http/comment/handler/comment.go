@@ -32,16 +32,16 @@ func NewCommentHandler(uc commentusecase.CommentUsecase) CommentHandler {
 // @Tags Comment
 // @Param Body body dto.CommentRequest true "the body to create a comment"
 // @Param username path string true "blog owner's username"
-// @Param slug path string true "post slug"
+// @Param post_slug path string true "post slug"
 // @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 201 {object} map[string]any
-// @Router /blog/{username}/posts/{slug}/comments [post]
+// @Router /blog/{username}/posts/{post_slug}/comments [post]
 func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 	var data dto.CommentRequest
 	blogOwner := c.Param("username")
-	postSlug := c.Param("slug")
+	postSlug := c.Param("post_slug")
 	username := c.GetString("username")
 
 	if username == "" {
@@ -113,13 +113,13 @@ func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
 // @Description Get all comments on a post
 // @Tags Comment
 // @Param username path string true "blog owner's username"
-// @Param slug path string true "post slug"
+// @Param post_slug path string true "post slug"
 // @Produce json
 // @Success 200 {objects} map[string]any
-// @Router /blog/{username}/posts/{slug}/comments [get]
+// @Router /blog/{username}/posts/{post_slug}/comments [get]
 func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 	blogOwner := c.Param("username")
-	postSlug := c.Param("slug")
+	postSlug := c.Param("post_slug")
 
 	comments, err := handler.uc.GetCommentByBlogOwnerAndPostSlug(c, blogOwner, postSlug)
 	if err != nil {
@@ -141,16 +141,16 @@ func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 // @Description Delete comment by ID
 // @Tags Comment
 // @Param username path string true "blog owner's username"
-// @Param slug path string true "post slug"
+// @Param post_slug path string true "post slug"
 // @Param comment_id path int true "comment ID"
 // @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
-// @Router /blog/{username}/posts/{slug}/comments/{comment_id} [delete]
+// @Router /blog/{username}/posts/{post_slug}/comments/{comment_id} [delete]
 func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 	blogOwner := c.Param("username")
-	postSlug := c.Param("slug")
+	postSlug := c.Param("post_slug")
 	commentID := c.Param("comment_id")
 	username := c.GetString("username")
 
@@ -173,18 +173,18 @@ func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 // @Description Edit user's comment on a post by providing comment ID
 // @Tags Comment
 // @Param username path string true "blog owner's username"
-// @Param slug path string true "post slug"
+// @Param post_slug path string true "post slug"
 // @Param Body body dto.CommentRequest true "body required to modify comment"
 // @Param comment_id path int true "comment ID"
 // @Param Authorization header string true "Authorization. Use 'Bearer <your-token>'"
 // @Security BearerToken
 // @Produce json
 // @Success 200 {objects} map[string]any
-// @Router /blog/{username}/posts/{slug}/comments/{comment_id} [put]
+// @Router /blog/{username}/posts/{post_slug}/comments/{comment_id} [put]
 func (handler *CommentHandlerImpl) EditMyCommentOnAPost(c *gin.Context) {
 	var data dto.CommentRequest
 	blogOwner := c.Param("username")
-	postSlug := c.Param("slug")
+	postSlug := c.Param("post_slug")
 	commentID := c.Param("comment_id")
 	username := c.GetString("username")
 

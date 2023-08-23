@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetToken(raw string) string {
+func getToken(raw string) string {
 	splitted := strings.Split(raw, " ")
 	if len(splitted) > 1 && splitted[0] == "Bearer" {
 		return splitted[1]
@@ -19,7 +19,7 @@ func GetToken(raw string) string {
 
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := GetToken(c.GetHeader("Authorization"))
+		token := getToken(c.GetHeader("Authorization"))
 		if token == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,

@@ -4,6 +4,7 @@ import (
 	"goproject/internal/app/delivery/http/auth"
 	"goproject/internal/app/delivery/http/blog"
 	"goproject/internal/app/delivery/http/comment"
+	"goproject/internal/app/delivery/http/list"
 	"goproject/internal/app/delivery/http/post"
 	"goproject/internal/app/delivery/http/user"
 
@@ -21,6 +22,7 @@ func NewRoute(db *gorm.DB) *gin.Engine {
 	blog.Route(r, db)
 	post.Route(r, db)
 	comment.Route(r, db)
+	list.Route(r, db)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

@@ -234,7 +234,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/blog/my/posts/{slug}": {
+        "/blog/my/posts/{post_slug}": {
             "put": {
                 "security": [
                     {
@@ -269,7 +269,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Slug of the post",
-                        "name": "slug",
+                        "name": "post_slug",
                         "in": "path",
                         "required": true
                     }
@@ -309,7 +309,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Slug of the post",
-                        "name": "slug",
+                        "name": "post_slug",
                         "in": "path",
                         "required": true
                     }
@@ -385,7 +385,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/blog/{username}/posts/{slug}": {
+        "/blog/{username}/posts/{post_slug}": {
             "get": {
                 "description": "Get a user post by providing their username and the post slug",
                 "produces": [
@@ -406,7 +406,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Slug of the post",
-                        "name": "slug",
+                        "name": "post_slug",
                         "in": "path",
                         "required": true
                     }
@@ -422,7 +422,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/blog/{username}/posts/{slug}/comments": {
+        "/blog/{username}/posts/{post_slug}/comments": {
             "get": {
                 "description": "Get all comments on a post",
                 "produces": [
@@ -443,7 +443,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "post slug",
-                        "name": "slug",
+                        "name": "post_slug",
                         "in": "path",
                         "required": true
                     }
@@ -491,7 +491,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "post slug",
-                        "name": "slug",
+                        "name": "post_slug",
                         "in": "path",
                         "required": true
                     },
@@ -514,7 +514,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/blog/{username}/posts/{slug}/comments/{comment_id}": {
+        "/blog/{username}/posts/{post_slug}/comments/{comment_id}": {
             "put": {
                 "security": [
                     {
@@ -540,7 +540,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "post slug",
-                        "name": "slug",
+                        "name": "post_slug",
                         "in": "path",
                         "required": true
                     },
@@ -602,7 +602,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "post slug",
-                        "name": "slug",
+                        "name": "post_slug",
                         "in": "path",
                         "required": true
                     },
@@ -616,6 +616,311 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Authorization. Use 'Bearer \u003cyour-token\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "objects"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog/{username}/posts/{post_slug}/save/{list_slug}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Add post to user's list by providing required data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "List"
+                ],
+                "summary": "Add post to my list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "blog owner's username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "post slug",
+                        "name": "post_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "list slug you want to add this post to",
+                        "name": "list_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "objects"
+                        }
+                    }
+                }
+            }
+        },
+        "/lists/my": {
+            "get": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Get current user's lists by providing required data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "List"
+                ],
+                "summary": "Get current user's lists",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "objects"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Create a new list for user by providing required data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "List"
+                ],
+                "summary": "Create a new list for user",
+                "parameters": [
+                    {
+                        "description": "body required to create a new list",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "objects"
+                        }
+                    }
+                }
+            }
+        },
+        "/lists/my/{list_slug}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Get posts in my list by providing required data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "List"
+                ],
+                "summary": "Get posts in my list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "list slug you want to get",
+                        "name": "list_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "objects"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Update current user's list information (name and description) by providing the list ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "List"
+                ],
+                "summary": "Update current user's list by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "list slug you want to edit",
+                        "name": "list_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "body to update",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ListRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "objects"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Delete current user's list by providing the list ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "List"
+                ],
+                "summary": "Delete current user's list by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "list slug you want to remove",
+                        "name": "list_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "objects"
+                        }
+                    }
+                }
+            }
+        },
+        "/lists/my/{list_slug}/{post_slug}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Remove post from current user's list by providing the list ID and post slug",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "List"
+                ],
+                "summary": "Remove post from current user's list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "list slug you want to remove post from",
+                        "name": "list_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "post slug you want to delete",
+                        "name": "post_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization. Use 'Bearer \u003ctoken\u003e'",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -739,6 +1044,17 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "comment": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ListRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

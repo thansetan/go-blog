@@ -10,7 +10,7 @@ type PostRequest struct {
 type PostResponse struct {
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`
-	Slug      string    `json:"title-slug"`
+	Slug      string    `json:"post_slug"`
 	Author    string    `json:"author"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

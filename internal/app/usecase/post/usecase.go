@@ -34,13 +34,12 @@ func (uc *PostUsecaseImpl) CreateNewPost(ctx context.Context, username string, d
 		return err
 	}
 
-	titleSlug := utils.GenerateSlug(data.Title)
 	postData := model.Post{
-		Title:     data.Title,
-		Content:   data.Content,
-		TitleSlug: titleSlug,
-		Author:    blog.User.Name,
-		BlogID:    blog.ID,
+		Title:   data.Title,
+		Content: data.Content,
+		Slug:    utils.GenerateSlug(data.Title),
+		Author:  blog.User.Name,
+		BlogID:  blog.ID,
 	}
 
 	err = uc.postRepo.Create(ctx, postData)
@@ -68,7 +67,7 @@ func (uc *PostUsecaseImpl) GetPostsByBlogOwner(ctx context.Context, username str
 		postsData = append(postsData, dto.PostResponse{
 			Title:     post.Title,
 			Content:   post.Content,
-			Slug:      post.TitleSlug,
+			Slug:      post.Slug,
 			Author:    post.Author,
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
@@ -85,7 +84,7 @@ func (uc *PostUsecaseImpl) GetPostBySlug(ctx context.Context, username, slug str
 	}
 	data := &dto.PostResponse{
 		Title:     post.Title,
-		Slug:      post.TitleSlug,
+		Slug:      post.Slug,
 		Content:   post.Content,
 		Author:    post.Author,
 		CreatedAt: post.CreatedAt,
