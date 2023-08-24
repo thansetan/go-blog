@@ -9,7 +9,7 @@ import (
 )
 
 type PostUsecase interface {
-	CreateNewPost(ctx context.Context, username string, data dto.PostRequest) error
+	CreateNewPost(ctx context.Context, username string, data dto.PostRequest) (*dto.CreatePostResponse, error)
 	GetPostsByBlogOwner(ctx context.Context, username string) ([]dto.PostResponse, error)
 	GetPostBySlug(ctx context.Context, username, slug string) (*dto.PostResponse, error)
 	UpdatePostBySlug(ctx context.Context, data dto.PostRequest, username, slug string) error
@@ -28,26 +28,26 @@ func NewPostUsecase(postRepo repository.PostRepository, blogRepo repository.Blog
 	}
 }
 
-func (uc *PostUsecaseImpl) CreateNewPost(ctx context.Context, username string, data dto.PostRequest) error {
+func (uc *PostUsecaseImpl) CreateNewPost(ctx context.Context, username string, data dto.PostRequest) (*dto.CreatePostResponse, error) {
+	resp := new(dto.CreatePostResponse)
 	blog, err := uc.blogRepo.FindByOwner(ctx, username)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	postData := model.Post{
 		Title:   data.Title,
 		Content: data.Content,
 		Slug:    utils.GenerateSlug(data.Title),
-		// Author:  blog.User.Name,
-		BlogID: blog.ID,
+		BlogID:  blog.ID,
 	}
 
 	err = uc.postRepo.Create(ctx, postData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return resp, nil
 }
 
 func (uc *PostUsecaseImpl) GetPostsByBlogOwner(ctx context.Context, username string) ([]dto.PostResponse, error) {

@@ -50,7 +50,6 @@ func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterReques
 		Owner:       data.Username,
 	}
 
-	// fmt.Println(blogData, userData)
 	tx := uc.db.Begin()
 
 	err = uc.userRepo.Create(ctx, userData, tx)

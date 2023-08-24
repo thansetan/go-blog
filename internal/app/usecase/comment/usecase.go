@@ -12,7 +12,7 @@ import (
 )
 
 type CommentUsecase interface {
-	CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) error
+	CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) (uint, error)
 	GetCommentByUsername(ctx context.Context, username string) ([]dto.CommentResponse, error)
 	GetCommentByBlogOwnerAndPostSlug(ctx context.Context, blogOwner, postSlug string) ([]dto.CommentResponse, error)
 	DeleteCommentOnAPosst(ctx context.Context, username, blogOwner, postSlug string, commentID string) error
@@ -31,10 +31,10 @@ func NewCommentUsecase(commentRepo repository.CommentRepository, postRepo reposi
 	}
 }
 
-func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) error {
+func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) (uint, error) {
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	commentData := model.Comment{
@@ -43,11 +43,11 @@ func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.Commen
 		Content:   data.Comment,
 	}
 
-	err = uc.commentRepo.Create(ctx, commentData)
+	id, err := uc.commentRepo.Create(ctx, commentData)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return id, nil
 }
 
 func (uc *CommentUsecaseImpl) GetCommentByUsername(ctx context.Context, username string) ([]dto.CommentResponse, error) {

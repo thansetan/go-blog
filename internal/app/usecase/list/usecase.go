@@ -13,7 +13,7 @@ import (
 )
 
 type ListUsecase interface {
-	CreateNewList(ctx context.Context, data dto.ListRequest, username string) error
+	CreateNewList(ctx context.Context, data dto.ListRequest, username string) (*dto.CreateListResponse, error)
 	AddPostToMyList(ctx context.Context, listSlug, username, blogOwner, postSlug string) error
 	GetPostsInAListBySlug(ctx context.Context, listSlug, username string) (*dto.ListResponse, error)
 	GetMyLists(ctx context.Context, username string) ([]dto.ListResponse, error)
@@ -34,7 +34,9 @@ func NewListUsecase(listRepo repository.ListRepository, postRepo repository.Post
 	}
 }
 
-func (uc *ListUsecaseImpl) CreateNewList(ctx context.Context, data dto.ListRequest, username string) error {
+func (uc *ListUsecaseImpl) CreateNewList(ctx context.Context, data dto.ListRequest, username string) (*dto.CreateListResponse, error) {
+	resp := new(dto.CreateListResponse)
+
 	listData := model.List{
 		Name:        data.Name,
 		Slug:        utils.GenerateSlug(data.Name),
@@ -44,9 +46,12 @@ func (uc *ListUsecaseImpl) CreateNewList(ctx context.Context, data dto.ListReque
 
 	err := uc.listRepo.Create(ctx, listData)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	resp.Slug = listData.Slug
+
+	return resp, nil
 }
 
 func (uc *ListUsecaseImpl) AddPostToMyList(ctx context.Context, listSlug, username, blogOwner, postSlug string) error {

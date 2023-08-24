@@ -1,8 +1,10 @@
 package posthandler
 
 import (
+	"fmt"
 	"goproject/internal/app/delivery/http/post/dto"
 	postusecase "goproject/internal/app/usecase/post"
+	"goproject/internal/helpers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -41,32 +43,23 @@ func (handler *PostHandlerImpl) CreateNewPost(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "create post", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "create post", helpers.ValidationError(err), nil)
 		return
 	}
 
-	err = handler.uc.CreateNewPost(c, username, data)
+	resp, err := handler.uc.CreateNewPost(c, username, data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "create post", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusCreated, "create post", nil, resp)
 }
 
 // @GetMyPosts godoc
@@ -81,25 +74,17 @@ func (handler *PostHandlerImpl) GetAllMyBlogPosts(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "get my posts", "you're not allowed to access this path", nil)
 		return
 	}
 
 	posts, err := handler.uc.GetPostsByBlogOwner(c, username)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get my posts", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-		"data":    posts,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "get my posts", nil, posts)
 }
 
 // @GetUsersBlogPosts godoc
@@ -115,16 +100,11 @@ func (handler *PostHandlerImpl) GetPostsByBlogOwner(c *gin.Context) {
 
 	posts, err := handler.uc.GetPostsByBlogOwner(c, username)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, fmt.Sprintf("get %s's posts", username), err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    posts,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, fmt.Sprintf("get %s's posts", username), nil, posts)
 }
 
 // @GetUserPostBySlug godoc
@@ -141,16 +121,11 @@ func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
 	username := c.Param("username")
 	post, err := handler.uc.GetPostBySlug(c, username, slug)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get post", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    post,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "get post", nil, post)
 }
 
 // @UpdateMyPostBySlug godoc
@@ -169,34 +144,23 @@ func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "update post", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "update post", helpers.ValidationError(err), nil)
 		return
 	}
 
 	err = handler.uc.UpdatePostBySlug(c, data, username, slug)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update post", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "update post", nil, nil)
 }
 
 // @DeleteMyPostBySlug godoc
@@ -213,22 +177,14 @@ func (handler *PostHandlerImpl) DeleteMyPostBySlug(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "delete post", "you're not allowed to access this path", nil)
 		return
 	}
 	err := handler.uc.DeletePostBySlug(c, username, slug)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "delete post", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "delete post", nil, nil)
 }

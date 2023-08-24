@@ -1,15 +1,17 @@
 package bloghandler
 
 import (
+	"fmt"
 	"goproject/internal/app/delivery/http/blog/dto"
 	blogusecase "goproject/internal/app/usecase/blog"
+	"goproject/internal/helpers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type BlogHandler interface {
-	UpdateMyBlogName(c *gin.Context)
+	UpdateBlogData(c *gin.Context)
 	GetMyBlog(c *gin.Context)
 	GetBlogByOwner(c *gin.Context)
 }
@@ -33,37 +35,28 @@ func NewBlogHandler(uc blogusecase.BlogUsecase) BlogHandler {
 // @Produce json
 // @Success 200 {object} map[string]any
 // @Router /blog/my [put]
-func (handler *BlogHandlerImpl) UpdateMyBlogName(c *gin.Context) {
+func (handler *BlogHandlerImpl) UpdateBlogData(c *gin.Context) {
 	var blog dto.UpdateBlogRequest
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "update blog data", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := c.ShouldBindJSON(&blog)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "update blog data", helpers.ValidationError(err), nil)
 		return
 	}
 
-	err = handler.uc.UpdateBlogName(c, username, blog)
+	err = handler.uc.UpdateBlogData(c, username, blog)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update bog data", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "update blog data", nil, nil)
 }
 
 // GetMyBlog godoc
@@ -77,25 +70,17 @@ func (handler *BlogHandlerImpl) UpdateMyBlogName(c *gin.Context) {
 func (handler *BlogHandlerImpl) GetMyBlog(c *gin.Context) {
 	username := c.GetString("username")
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "get my blog", "you're not allowed to access this path", nil)
 		return
 	}
 
 	blog, err := handler.uc.GetBlogByOwner(c, username)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get my blog", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    blog,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "get my blog", nil, blog)
 }
 
 // GetUserBlog godoc
@@ -111,14 +96,9 @@ func (handler *BlogHandlerImpl) GetBlogByOwner(c *gin.Context) {
 
 	blog, err := handler.uc.GetBlogByOwner(c, owner)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, fmt.Sprintf("get %s's blog", owner), err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    blog,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, fmt.Sprintf("get %s's blog", owner), nil, blog)
 }

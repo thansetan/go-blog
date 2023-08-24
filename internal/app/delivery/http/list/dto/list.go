@@ -7,6 +7,10 @@ type ListRequest struct {
 	Description string `json:"description"`
 }
 
+type CreateListResponse struct {
+	Slug string `json:"slug"`
+}
+
 type ListResponse struct {
 	Slug        string              `json:"list_slug"`
 	Name        string              `json:"name"`

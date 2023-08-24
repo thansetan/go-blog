@@ -3,6 +3,7 @@ package userhandler
 import (
 	"goproject/internal/app/delivery/http/user/dto"
 	userusecase "goproject/internal/app/usecase/user"
+	"goproject/internal/helpers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,26 +36,17 @@ func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "get my information", "you're not allowed to access this path", nil)
 		return
 	}
 
 	user, err := handler.uc.GetUserDataByUsername(c, username)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get my information", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    user,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "get my information", nil, user)
 }
 
 // ChangePassword godoc
@@ -71,33 +63,23 @@ func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "update password", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "update password", helpers.ValidationError(err), nil)
 		return
 	}
 
 	err = handler.uc.ChangePasswordByUsername(c, username, data)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update password", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "update password", nil, nil)
 }
 
 // UpdateMyInformation godoc
@@ -114,32 +96,21 @@ func (handler *UserHandlerImpl) UpdateMyInformation(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "update information", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "update information", helpers.ValidationError(err), nil)
 		return
 	}
 
 	err = handler.uc.UpdateUserInformation(c, username, data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update information", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "update information", nil, nil)
 }

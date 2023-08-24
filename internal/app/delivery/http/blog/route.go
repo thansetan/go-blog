@@ -19,7 +19,7 @@ func Route(r *gin.RouterGroup, db *gorm.DB) {
 	{
 		myBlog := blog.Group("/my").Use(middlewares.JWTAuthMiddleware())
 		{
-			myBlog.PUT("", handler.UpdateMyBlogName)
+			myBlog.PUT("", handler.UpdateBlogData)
 			myBlog.GET("", handler.GetMyBlog)
 		}
 		blog.GET("/:username", handler.GetBlogByOwner)

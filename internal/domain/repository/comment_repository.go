@@ -6,7 +6,7 @@ import (
 )
 
 type CommentRepository interface {
-	Create(ctx context.Context, data model.Comment) error
+	Create(ctx context.Context, data model.Comment) (uint, error)
 	FindCommentByUsername(ctx context.Context, username string) ([]model.Comment, error)
 	FindCommentByPostID(ctx context.Context, PostID uint) ([]model.Comment, error)
 	Delete(ctx context.Context, data model.Comment) error

@@ -14,15 +14,17 @@ type InputError struct {
 	Msg   string `json:"message"`
 }
 
-func ValidationError(valErr error) []InputError {
+func ValidationError(valErr error) any {
 	var ve validator.ValidationErrors
-	errors.As(valErr, &ve)
-	out := make([]InputError, len(ve))
-	for i, fe := range ve {
-		out[i] = InputError{strings.ToLower(fe.Field()), errorMessage(fe.Tag(), fe.Param())}
-	}
+	if errors.As(valErr, &ve) {
+		out := make([]InputError, len(ve))
+		for i, fe := range ve {
+			out[i] = InputError{strings.ToLower(fe.Field()), errorMessage(fe.Tag(), fe.Param())}
+		}
 
-	return out
+		return out
+	}
+	return valErr
 }
 
 func errorMessage(tag, param string) string {
@@ -37,7 +39,7 @@ func errorMessage(tag, param string) string {
 	case "max":
 		return fmt.Sprintf("This field length can't exceed %s characters", param)
 	case "password":
-		return "This field must contain at least 1 numerical character and 1 symbol"
+		return "This field must contains at least 1 numerical character, 1 symbol and 1 uppercase letter"
 	default:
 		return ""
 	}
@@ -48,6 +50,7 @@ func ValidatePassword(fl validator.FieldLevel) bool {
 
 	hasNumeric := regexp.MustCompile(`[0-9]`).MatchString(password)
 	hasSymbol := regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]`).MatchString(password)
+	hasUppercase := regexp.MustCompile(`[A-Z]`).MatchString(password)
 
-	return hasNumeric && hasSymbol
+	return hasNumeric && hasSymbol && hasUppercase
 }

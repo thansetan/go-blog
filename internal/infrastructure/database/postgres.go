@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Config struct {
@@ -34,7 +35,9 @@ func NewPostgresDB() (*Database, error) {
 		config.Port,
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Error),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -50,6 +53,7 @@ func NewPostgresDB() (*Database, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &Database{
 		DB: db,
 	}, nil

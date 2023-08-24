@@ -3,6 +3,7 @@ package listhandler
 import (
 	"goproject/internal/app/delivery/http/list/dto"
 	listusecase "goproject/internal/app/usecase/list"
+	"goproject/internal/helpers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,34 +43,23 @@ func (handler *ListHandlerImpl) CreateNewList(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "create list", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "create list", helpers.ValidationError(err), nil)
 		return
 	}
 
-	err = handler.uc.CreateNewList(c, data, username)
+	id, err := handler.uc.CreateNewList(c, data, username)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "create list", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusCreated, "create list", nil, id)
 }
 
 // @AddPostToMyList godoc
@@ -90,25 +80,17 @@ func (handler *ListHandlerImpl) AddPostToMyList(c *gin.Context) {
 	listSlug := c.Param("list_slug")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "add post to list", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := handler.uc.AddPostToMyList(c, listSlug, username, blogOwner, postSlug)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "add post to list", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "add post to list", nil, nil)
 }
 
 // @GetPostsInMyList godoc
@@ -125,26 +107,17 @@ func (handler *ListHandlerImpl) GetPostsInMyListBySlug(c *gin.Context) {
 	listSlug := c.Param("list_slug")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "get posts in list", "you're not allowed to access this path", nil)
 		return
 	}
 
 	list, err := handler.uc.GetPostsInAListBySlug(c, listSlug, username)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get posts in list", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-		"data":    list,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "get posts in list", nil, list)
 }
 
 // @GetMyLists godoc
@@ -159,26 +132,17 @@ func (handler *ListHandlerImpl) GetMyLists(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "get lists", "you're not allowed to access this path", nil)
 		return
 	}
 
 	lists, err := handler.uc.GetMyLists(c, username)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get lists", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    lists,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "get lists", nil, lists)
 }
 
 // @UpdateMyListInformation godoc
@@ -197,34 +161,23 @@ func (handler *ListHandlerImpl) UpdateMyListInformationBySlug(c *gin.Context) {
 	listSlug := c.Param("list_slug")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "update list", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "update list", helpers.ValidationError(err), nil)
 		return
 	}
 
 	err = handler.uc.UpdateListInformation(c, data, username, listSlug)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update list", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "update list", nil, nil)
 }
 
 // @RemovePostFromUserList godoc
@@ -243,25 +196,17 @@ func (handler *ListHandlerImpl) RemovePostFromMyList(c *gin.Context) {
 	postSlug := c.Param("post_slug")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "remove post from list", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := handler.uc.RemovePostFromList(c, username, postSlug, listSlug)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "remove post from list", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "remove post from list", nil, nil)
 }
 
 // @DeleteMyList godoc
@@ -278,23 +223,15 @@ func (handler *ListHandlerImpl) DeleteMyListBySlug(c *gin.Context) {
 	listSlug := c.Param("list_slug")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "delete list", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := handler.uc.DeleteListBySlug(c, username, listSlug)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "delete list", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "delete list", nil, nil)
 }

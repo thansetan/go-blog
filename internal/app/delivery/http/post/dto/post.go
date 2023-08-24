@@ -7,6 +7,9 @@ type PostRequest struct {
 	Content string `json:"content" binding:"required"`
 }
 
+type CreatePostResponse struct {
+	Slug string `json:"post_slug"`
+}
 type PostResponse struct {
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`

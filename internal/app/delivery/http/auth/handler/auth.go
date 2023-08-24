@@ -3,6 +3,7 @@ package authhandler
 import (
 	"goproject/internal/app/delivery/http/auth/dto"
 	authusecase "goproject/internal/app/usecase/auth"
+	"goproject/internal/helpers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -36,24 +37,17 @@ func (handler *UserHandlerImpl) Register(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "register", helpers.ValidationError(err), nil)
 		return
 	}
 
 	err = handler.uc.Register(c, data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"err":     err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "register", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusCreated, "register", nil, nil)
 }
 
 // UserLogin godoc
@@ -69,20 +63,15 @@ func (handler *UserHandlerImpl) Login(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "login", helpers.ValidationError(err), nil)
 		return
 	}
 
 	resp, err := handler.uc.Login(c, data)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "login", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	helpers.ResponseBuilder(c, http.StatusOK, "login", nil, resp)
 }

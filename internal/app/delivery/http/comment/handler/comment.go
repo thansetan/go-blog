@@ -3,6 +3,7 @@ package commenthandler
 import (
 	"goproject/internal/app/delivery/http/comment/dto"
 	commentusecase "goproject/internal/app/usecase/comment"
+	"goproject/internal/helpers"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,33 +45,23 @@ func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "create comment", "you're not allowed to access this path", nil)
 		return
 	}
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
-	}
-
-	err = handler.uc.CreateComment(c, data, username, blogOwner, postSlug)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "create comment", helpers.ValidationError(err), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	commentID, err := handler.uc.CreateComment(c, data, username, blogOwner, postSlug)
+	if err != nil {
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "create comment", err.Error(), nil)
+		return
+	}
+
+	helpers.ResponseBuilder(c, http.StatusCreated, "create comment", nil, commentID)
 }
 
 // @GetMyComments Godoc
@@ -84,26 +75,17 @@ func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
 	username := c.GetString("username")
 	if username == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "get comments", "you're not allowed to access this path", nil)
 		return
 	}
 
 	comments, err := handler.uc.GetCommentByUsername(c, username)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get comments", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    comments,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "get comments", nil, comments)
 }
 
 // @GetCommentOnAPost Godoc
@@ -121,17 +103,11 @@ func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 
 	comments, err := handler.uc.GetCommentByBlogOwnerAndPostSlug(c, blogOwner, postSlug)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get comments", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    comments,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "get comments", nil, comments)
 }
 
 // @DeleteCommentByID Godoc
@@ -151,18 +127,18 @@ func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 	commentID := c.Param("comment_id")
 	username := c.GetString("username")
 
-	err := handler.uc.DeleteCommentOnAPosst(c, username, blogOwner, postSlug, commentID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+	if username == "" {
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "delete comment", "you're not allowed to access this path", nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	err := handler.uc.DeleteCommentOnAPosst(c, username, blogOwner, postSlug, commentID)
+	if err != nil {
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "delete comment", err.Error(), nil)
+		return
+	}
+
+	helpers.ResponseBuilder(c, http.StatusOK, "delete comment", nil, nil)
 }
 
 // @EditMyCommentOnAPost Godoc
@@ -184,24 +160,22 @@ func (handler *CommentHandlerImpl) EditMyCommentOnAPost(c *gin.Context) {
 	commentID := c.Param("comment_id")
 	username := c.GetString("username")
 
+	if username == "" {
+		helpers.ResponseBuilder(c, http.StatusUnauthorized, "edit comment", "you're not allowed to access this path", nil)
+		return
+	}
+
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "username not provided",
-		})
+		helpers.ResponseBuilder(c, http.StatusBadRequest, "edit comment", helpers.ValidationError(err), nil)
+		return
 	}
 
 	err = handler.uc.UpdateCommentOnAPost(c, username, blogOwner, postSlug, commentID, data)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		helpers.ResponseBuilder(c, http.StatusInternalServerError, "edit comment", err.Error(), nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-	})
+	helpers.ResponseBuilder(c, http.StatusOK, "edit comment", nil, nil)
 }

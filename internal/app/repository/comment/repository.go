@@ -18,9 +18,9 @@ func NewCommentRepository(db *gorm.DB) repository.CommentRepository {
 	}
 }
 
-func (repo *CommentRepositoryImpl) Create(ctx context.Context, data model.Comment) error {
+func (repo *CommentRepositoryImpl) Create(ctx context.Context, data model.Comment) (uint, error) {
 	err := repo.db.WithContext(ctx).Create(&data).Error
-	return err
+	return data.ID, err
 }
 
 func (repo *CommentRepositoryImpl) FindCommentByUsername(ctx context.Context, username string) ([]model.Comment, error) {
