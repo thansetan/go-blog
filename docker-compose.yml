@@ -3,7 +3,7 @@ version: '1'
 services:
   db:
     image: postgres:latest
-    container_name: project-db
+    container_name: goblog-db
     restart: always
     env_file:
       - .env
@@ -14,15 +14,17 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
     healthcheck:
-      test: "pg_isready -h db -p 5432 -q"
+      test: "pg_isready -h db -p 5432 -U ${DB_USER}"
       interval: 1s
       timeout: 60s
       retries: 60
+    volumes:
+      - ./goblog-db.sql:/docker-entrypoint-initdb.d/init.sql
 
   main-app:
     build:
       context: .
-    container_name: project-app
+    container_name: goblog-app
     env_file:
       - .env
     environment:
