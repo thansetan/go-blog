@@ -35,6 +35,11 @@ func (repo *BlogRepositoryImpl) FindByOwner(ctx context.Context, owner string) (
 }
 
 func (repo *BlogRepositoryImpl) Update(ctx context.Context, data model.Blog) error {
-	err := repo.db.Updates(&data).Error
+	newData := map[string]any{
+		"name":        data.Name,
+		"description": data.Description,
+	}
+
+	err := repo.db.WithContext(ctx).Model(&data).Updates(newData).Error
 	return err
 }

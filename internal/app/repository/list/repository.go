@@ -2,7 +2,6 @@ package listrepository
 
 import (
 	"context"
-	"fmt"
 	"goproject/internal/domain/model"
 	"goproject/internal/domain/repository"
 
@@ -25,12 +24,13 @@ func (repo *ListRepositoryImpl) Create(ctx context.Context, data model.List) err
 }
 
 func (repo *ListRepositoryImpl) Update(ctx context.Context, data model.List) error {
-	query := repo.db.WithContext(ctx).Updates(data)
-	if err := query.Error; err != nil {
-		return err
+	newData := map[string]any{
+		"name":        data.Name,
+		"description": data.Description,
 	}
-	fmt.Println(query.RowsAffected)
-	return nil
+
+	err := repo.db.WithContext(ctx).Model(data).Updates(newData).Error
+	return err
 }
 
 func (repo *ListRepositoryImpl) FindListsByOwner(ctx context.Context, username string) ([]model.List, error) {
