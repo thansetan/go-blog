@@ -3,7 +3,7 @@ package dto
 import "time"
 
 type CommentRequest struct {
-	Comment string `json:"comment"`
+	Comment string `json:"comment" binding:"required"`
 }
 
 type CommentResponse struct {

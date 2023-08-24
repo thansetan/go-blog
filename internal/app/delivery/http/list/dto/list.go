@@ -3,7 +3,7 @@ package dto
 import "goproject/internal/app/delivery/http/post/dto"
 
 type ListRequest struct {
-	Name        string `json:"name"`
+	Name        string `json:"name" binding:"required"`
 	Description string `json:"description"`
 }
 
