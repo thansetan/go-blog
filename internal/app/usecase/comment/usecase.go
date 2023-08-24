@@ -24,21 +24,21 @@ type CommentUsecase interface {
 	UpdateCommentOnAPost(ctx context.Context, username, blogOwner, postSlug string, commentID string, data dto.CommentRequest) *helpers.Error
 }
 
-type CommentUsecaseImpl struct {
+type commentUsecaseImpl struct {
 	commentRepo repository.CommentRepository
 	postRepo    repository.PostRepository
 	logger      *slog.Logger
 }
 
 func NewCommentUsecase(commentRepo repository.CommentRepository, postRepo repository.PostRepository, logger *slog.Logger) CommentUsecase {
-	return &CommentUsecaseImpl{
+	return &commentUsecaseImpl{
 		postRepo:    postRepo,
 		commentRepo: commentRepo,
 		logger:      logger,
 	}
 }
 
-func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) (uint, *helpers.Error) {
+func (uc *commentUsecaseImpl) CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) (uint, *helpers.Error) {
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -62,7 +62,7 @@ func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.Commen
 	return id, nil
 }
 
-func (uc *CommentUsecaseImpl) GetCommentsByUsername(ctx context.Context, username string) ([]dto.CommentResponse, *helpers.Error) {
+func (uc *commentUsecaseImpl) GetCommentsByUsername(ctx context.Context, username string) ([]dto.CommentResponse, *helpers.Error) {
 	commentsData := make([]dto.CommentResponse, 0)
 
 	comments, err := uc.commentRepo.FindCommentByUsername(ctx, username)
@@ -84,7 +84,7 @@ func (uc *CommentUsecaseImpl) GetCommentsByUsername(ctx context.Context, usernam
 	return commentsData, nil
 }
 
-func (uc *CommentUsecaseImpl) GetCommentsByBlogOwnerAndPostSlug(ctx context.Context, blogOwner, postSlug string) ([]dto.CommentResponse, *helpers.Error) {
+func (uc *commentUsecaseImpl) GetCommentsByBlogOwnerAndPostSlug(ctx context.Context, blogOwner, postSlug string) ([]dto.CommentResponse, *helpers.Error) {
 	commentsData := make([]dto.CommentResponse, 0)
 
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
@@ -115,7 +115,7 @@ func (uc *CommentUsecaseImpl) GetCommentsByBlogOwnerAndPostSlug(ctx context.Cont
 	return commentsData, nil
 }
 
-func (uc *CommentUsecaseImpl) DeleteCommentOnAPosst(ctx context.Context, username, blogOwner, postSlug string, commentID string) *helpers.Error {
+func (uc *commentUsecaseImpl) DeleteCommentOnAPosst(ctx context.Context, username, blogOwner, postSlug string, commentID string) *helpers.Error {
 	// blog owner can delete any users comment on their post
 	// user (non blog owner) can ony delete their own comments on someone else's blog post
 
@@ -160,7 +160,7 @@ func (uc *CommentUsecaseImpl) DeleteCommentOnAPosst(ctx context.Context, usernam
 	return nil
 }
 
-func (uc *CommentUsecaseImpl) UpdateCommentOnAPost(ctx context.Context, username, blogOwner, postSlug string, commentID string, data dto.CommentRequest) *helpers.Error {
+func (uc *commentUsecaseImpl) UpdateCommentOnAPost(ctx context.Context, username, blogOwner, postSlug string, commentID string, data dto.CommentRequest) *helpers.Error {
 	// the only person able to edit a comment is the commenter
 
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)

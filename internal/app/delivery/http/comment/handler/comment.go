@@ -17,12 +17,12 @@ type CommentHandler interface {
 	EditMyCommentOnAPost(c *gin.Context)
 }
 
-type CommentHandlerImpl struct {
+type commentHandlerImpl struct {
 	uc commentusecase.CommentUsecase
 }
 
 func NewCommentHandler(uc commentusecase.CommentUsecase) CommentHandler {
-	return &CommentHandlerImpl{
+	return &commentHandlerImpl{
 		uc: uc,
 	}
 }
@@ -40,7 +40,7 @@ func NewCommentHandler(uc commentusecase.CommentUsecase) CommentHandler {
 //	@Success		201	{object}	helpers.ResponseWithData{data=dto.CreateCommentResponse}
 //	@Failure		404	{object}	helpers.ResponseWithError
 //	@Router			/blog/{username}/posts/{post_slug}/comments [post]
-func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
+func (handler *commentHandlerImpl) CreateComment(c *gin.Context) {
 	var data dto.CommentRequest
 	blogOwner := c.Param("username")
 	postSlug := c.Param("post_slug")
@@ -74,7 +74,7 @@ func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	helpers.ResponseWithData{data=dto.CommentResponse}
 //	@Router			/my/comments [get]
-func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
+func (handler *commentHandlerImpl) GetMyComments(c *gin.Context) {
 	username := c.GetString("username")
 	if username == "" {
 		helpers.ResponseBuilder(c, http.StatusUnauthorized, "get comments", "you're not allowed to access this path", nil)
@@ -99,7 +99,7 @@ func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
 //	@Produce			json
 //	@Success			200	{object}	helpers.ResponseWithData{data=[]dto.CommentResponse}
 //	@Router				/blog/{username}/posts/{post_slug}/comments [get]
-func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
+func (handler *commentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 	blogOwner := c.Param("username")
 	postSlug := c.Param("post_slug")
 
@@ -126,7 +126,7 @@ func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 //	@Success			200	{object}	helpers.ResponseWithoutDataAndError
 //	@Failure			404	{object}	helpers.ResponseWithError
 //	@Router				/blog/{username}/posts/{post_slug}/comments/{comment_id} [delete]
-func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
+func (handler *commentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 	blogOwner := c.Param("username")
 	postSlug := c.Param("post_slug")
 	commentID := c.Param("comment_id")
@@ -159,7 +159,7 @@ func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 //	@Success				200	{object}	helpers.ResponseWithoutDataAndError
 //	@Failure				404	{object}	helpers.ResponseWithError
 //	@Router					/blog/{username}/posts/{post_slug}/comments/{comment_id} [put]
-func (handler *CommentHandlerImpl) EditMyCommentOnAPost(c *gin.Context) {
+func (handler *commentHandlerImpl) EditMyCommentOnAPost(c *gin.Context) {
 	var data dto.CommentRequest
 	blogOwner := c.Param("username")
 	postSlug := c.Param("post_slug")

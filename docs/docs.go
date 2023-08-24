@@ -334,7 +334,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Delete current user's blog post by providing the post slug.",
+                "description": "Delete current user's blog post by providing the post slug.\nWhen a post is deleted, all comments on the post will also be deleted.\nAlso, if the post is part of someone's lists, the post in that list will also be deleted.",
                 "produces": [
                     "application/json"
                 ],

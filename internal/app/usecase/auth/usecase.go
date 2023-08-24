@@ -21,7 +21,7 @@ type AuthUsecase interface {
 	Login(ctx context.Context, data dto.LoginRequest) (*dto.LoginResponse, *helpers.Error)
 }
 
-type AuthUsecaseImpl struct {
+type authUsecaseImpl struct {
 	userRepo repository.UserRepository
 	blogRepo repository.BlogRepository
 	db       *gorm.DB
@@ -29,7 +29,7 @@ type AuthUsecaseImpl struct {
 }
 
 func NewAuthUsecase(userRepo repository.UserRepository, blogRepo repository.BlogRepository, db *gorm.DB, logger *slog.Logger) AuthUsecase {
-	return &AuthUsecaseImpl{
+	return &authUsecaseImpl{
 		userRepo: userRepo,
 		blogRepo: blogRepo,
 		db:       db,
@@ -37,7 +37,7 @@ func NewAuthUsecase(userRepo repository.UserRepository, blogRepo repository.Blog
 	}
 }
 
-func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterRequest) *helpers.Error {
+func (uc *authUsecaseImpl) Register(ctx context.Context, data dto.RegisterRequest) *helpers.Error {
 	password, err := utils.HashPassword(data.Password)
 	if err != nil {
 		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
@@ -80,7 +80,7 @@ func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterReques
 	return nil
 }
 
-func (uc *AuthUsecaseImpl) Login(ctx context.Context, data dto.LoginRequest) (*dto.LoginResponse, *helpers.Error) {
+func (uc *authUsecaseImpl) Login(ctx context.Context, data dto.LoginRequest) (*dto.LoginResponse, *helpers.Error) {
 	user, err := uc.userRepo.FindByUsername(ctx, data.Username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

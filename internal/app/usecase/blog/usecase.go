@@ -18,19 +18,19 @@ type BlogUsecase interface {
 	GetBlogByOwner(ctx context.Context, owner string) (*dto.BlogResponse, *helpers.Error)
 }
 
-type BlogUsecaseImpl struct {
+type blogUsecaseImpl struct {
 	repo   repository.BlogRepository
 	logger *slog.Logger
 }
 
 func NewBlogUsecase(repo repository.BlogRepository, logger *slog.Logger) BlogUsecase {
-	return &BlogUsecaseImpl{
+	return &blogUsecaseImpl{
 		repo:   repo,
 		logger: logger,
 	}
 }
 
-func (uc *BlogUsecaseImpl) UpdateBlogData(ctx context.Context, username string, data dto.UpdateBlogRequest) *helpers.Error {
+func (uc *blogUsecaseImpl) UpdateBlogData(ctx context.Context, username string, data dto.UpdateBlogRequest) *helpers.Error {
 	blog, err := uc.repo.FindByOwner(ctx, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -52,7 +52,7 @@ func (uc *BlogUsecaseImpl) UpdateBlogData(ctx context.Context, username string, 
 	return nil
 }
 
-func (uc *BlogUsecaseImpl) GetBlogByOwner(ctx context.Context, owner string) (*dto.BlogResponse, *helpers.Error) {
+func (uc *blogUsecaseImpl) GetBlogByOwner(ctx context.Context, owner string) (*dto.BlogResponse, *helpers.Error) {
 	blog, err := uc.repo.FindByOwner(ctx, owner)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

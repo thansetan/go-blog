@@ -26,21 +26,21 @@ type ListUsecase interface {
 	DeleteListBySlug(ctx context.Context, username, listSlug string) *helpers.Error
 }
 
-type ListUsecaseImpl struct {
+type listUsecaseImpl struct {
 	listRepo repository.ListRepository
 	postRepo repository.PostRepository
 	logger   *slog.Logger
 }
 
 func NewListUsecase(listRepo repository.ListRepository, postRepo repository.PostRepository, logger *slog.Logger) ListUsecase {
-	return &ListUsecaseImpl{
+	return &listUsecaseImpl{
 		listRepo: listRepo,
 		postRepo: postRepo,
 		logger:   logger,
 	}
 }
 
-func (uc *ListUsecaseImpl) CreateNewList(ctx context.Context, data dto.ListRequest, username string) (*dto.CreateListResponse, *helpers.Error) {
+func (uc *listUsecaseImpl) CreateNewList(ctx context.Context, data dto.ListRequest, username string) (*dto.CreateListResponse, *helpers.Error) {
 	resp := new(dto.CreateListResponse)
 
 	listData := model.List{
@@ -61,7 +61,7 @@ func (uc *ListUsecaseImpl) CreateNewList(ctx context.Context, data dto.ListReque
 	return resp, nil
 }
 
-func (uc *ListUsecaseImpl) AddPostToMyList(ctx context.Context, listSlug, username, blogOwner, postSlug string) *helpers.Error {
+func (uc *listUsecaseImpl) AddPostToMyList(ctx context.Context, listSlug, username, blogOwner, postSlug string) *helpers.Error {
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -92,7 +92,7 @@ func (uc *ListUsecaseImpl) AddPostToMyList(ctx context.Context, listSlug, userna
 	return nil
 }
 
-func (uc *ListUsecaseImpl) GetPostsInAListBySlug(ctx context.Context, listSlug, username string) (*dto.ListResponse, *helpers.Error) {
+func (uc *listUsecaseImpl) GetPostsInAListBySlug(ctx context.Context, listSlug, username string) (*dto.ListResponse, *helpers.Error) {
 	listData := new(dto.ListResponse)
 	listData.Posts = &[]postDto.PostResponse{}
 
@@ -123,7 +123,7 @@ func (uc *ListUsecaseImpl) GetPostsInAListBySlug(ctx context.Context, listSlug, 
 	return listData, nil
 }
 
-func (uc *ListUsecaseImpl) GetMyLists(ctx context.Context, username string) ([]dto.ListResponse, *helpers.Error) {
+func (uc *listUsecaseImpl) GetMyLists(ctx context.Context, username string) ([]dto.ListResponse, *helpers.Error) {
 	listsData := make([]dto.ListResponse, 0)
 
 	lists, err := uc.listRepo.FindListsByOwner(ctx, username)
@@ -145,7 +145,7 @@ func (uc *ListUsecaseImpl) GetMyLists(ctx context.Context, username string) ([]d
 	return listsData, nil
 }
 
-func (uc *ListUsecaseImpl) UpdateListInformation(ctx context.Context, data dto.ListRequest, username, listSlug string) *helpers.Error {
+func (uc *listUsecaseImpl) UpdateListInformation(ctx context.Context, data dto.ListRequest, username, listSlug string) *helpers.Error {
 	list, err := uc.listRepo.FindListByOwnerAndListSlug(ctx, username, listSlug)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -166,7 +166,7 @@ func (uc *ListUsecaseImpl) UpdateListInformation(ctx context.Context, data dto.L
 	return nil
 }
 
-func (uc *ListUsecaseImpl) RemovePostFromList(ctx context.Context, username, postSlug, listSlug string) *helpers.Error {
+func (uc *listUsecaseImpl) RemovePostFromList(ctx context.Context, username, postSlug, listSlug string) *helpers.Error {
 	list, err := uc.listRepo.FindPostsInAListByListSlug(ctx, username, listSlug)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -194,7 +194,7 @@ func (uc *ListUsecaseImpl) RemovePostFromList(ctx context.Context, username, pos
 	return nil
 }
 
-func (uc *ListUsecaseImpl) DeleteListBySlug(ctx context.Context, username, listSlug string) *helpers.Error {
+func (uc *listUsecaseImpl) DeleteListBySlug(ctx context.Context, username, listSlug string) *helpers.Error {
 	list, err := uc.listRepo.FindListByOwnerAndListSlug(ctx, username, listSlug)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

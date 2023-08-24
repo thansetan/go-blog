@@ -22,6 +22,9 @@ import (
 func NewRoute(db *gorm.DB, logger *slog.Logger) *gin.Engine {
 	r := gin.Default()
 
+	r.GET("/", func(c *gin.Context) {
+		c.Data(200, "text/html", []byte(`<a href="/swagger/index.html">Swagger Docs</a>`))
+	})
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("password", helpers.ValidatePassword)
 	}

@@ -22,21 +22,21 @@ type PostUsecase interface {
 	DeletePostBySlug(ctx context.Context, username, slug string) *helpers.Error
 }
 
-type PostUsecaseImpl struct {
+type postUsecaseImpl struct {
 	postRepo repository.PostRepository
 	blogRepo repository.BlogRepository
 	logger   *slog.Logger
 }
 
 func NewPostUsecase(postRepo repository.PostRepository, blogRepo repository.BlogRepository, logger *slog.Logger) PostUsecase {
-	return &PostUsecaseImpl{
+	return &postUsecaseImpl{
 		postRepo: postRepo,
 		blogRepo: blogRepo,
 		logger:   logger,
 	}
 }
 
-func (uc *PostUsecaseImpl) CreateNewPost(ctx context.Context, username string, data dto.PostRequest) (*dto.CreatePostResponse, *helpers.Error) {
+func (uc *postUsecaseImpl) CreateNewPost(ctx context.Context, username string, data dto.PostRequest) (*dto.CreatePostResponse, *helpers.Error) {
 	resp := new(dto.CreatePostResponse)
 	blog, err := uc.blogRepo.FindByOwner(ctx, username)
 	if err != nil {
@@ -65,7 +65,7 @@ func (uc *PostUsecaseImpl) CreateNewPost(ctx context.Context, username string, d
 	return resp, nil
 }
 
-func (uc *PostUsecaseImpl) GetPostsByBlogOwner(ctx context.Context, username string) ([]dto.PostResponse, *helpers.Error) {
+func (uc *postUsecaseImpl) GetPostsByBlogOwner(ctx context.Context, username string) ([]dto.PostResponse, *helpers.Error) {
 	postsData := make([]dto.PostResponse, 0)
 
 	blog, err := uc.blogRepo.FindByOwner(ctx, username)
@@ -97,7 +97,7 @@ func (uc *PostUsecaseImpl) GetPostsByBlogOwner(ctx context.Context, username str
 	return postsData, nil
 }
 
-func (uc *PostUsecaseImpl) GetPostBySlug(ctx context.Context, username, slug string) (*dto.PostResponse, *helpers.Error) {
+func (uc *postUsecaseImpl) GetPostBySlug(ctx context.Context, username, slug string) (*dto.PostResponse, *helpers.Error) {
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, slug, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -117,7 +117,7 @@ func (uc *PostUsecaseImpl) GetPostBySlug(ctx context.Context, username, slug str
 	return data, nil
 }
 
-func (uc *PostUsecaseImpl) UpdatePostBySlug(ctx context.Context, data dto.PostRequest, username, slug string) *helpers.Error {
+func (uc *postUsecaseImpl) UpdatePostBySlug(ctx context.Context, data dto.PostRequest, username, slug string) *helpers.Error {
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, slug, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -139,7 +139,7 @@ func (uc *PostUsecaseImpl) UpdatePostBySlug(ctx context.Context, data dto.PostRe
 	return nil
 }
 
-func (uc *PostUsecaseImpl) DeletePostBySlug(ctx context.Context, username, slug string) *helpers.Error {
+func (uc *postUsecaseImpl) DeletePostBySlug(ctx context.Context, username, slug string) *helpers.Error {
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, slug, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

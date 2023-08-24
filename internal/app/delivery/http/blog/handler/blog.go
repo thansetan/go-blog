@@ -16,17 +16,18 @@ type BlogHandler interface {
 	GetBlogByOwner(c *gin.Context)
 }
 
-type BlogHandlerImpl struct {
+type blogHandlerImpl struct {
 	uc blogusecase.BlogUsecase
 }
 
 func NewBlogHandler(uc blogusecase.BlogUsecase) BlogHandler {
-	return &BlogHandlerImpl{
+	return &blogHandlerImpl{
 		uc: uc,
 	}
 }
 
 // UpdateMyBlog godoc
+//
 //	@Summary		Change current user's blog information
 //	@Description	Change current user's blog name and description.
 //	@Tags			Blog
@@ -35,7 +36,7 @@ func NewBlogHandler(uc blogusecase.BlogUsecase) BlogHandler {
 //	@Produce		json
 //	@Success		200	{object}	helpers.ResponseWithoutDataAndError
 //	@Router			/blog/my [put]
-func (handler *BlogHandlerImpl) UpdateBlogData(c *gin.Context) {
+func (handler *blogHandlerImpl) UpdateBlogData(c *gin.Context) {
 	var blog dto.UpdateBlogRequest
 	username := c.GetString("username")
 
@@ -60,6 +61,7 @@ func (handler *BlogHandlerImpl) UpdateBlogData(c *gin.Context) {
 }
 
 // GetMyBlog godoc
+//
 //	@Summary		Get current user's blog information
 //	@Description	Get current user's blog information (name, description, number of posts).
 //	@Tags			Blog
@@ -67,7 +69,7 @@ func (handler *BlogHandlerImpl) UpdateBlogData(c *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	helpers.ResponseWithData{data=dto.BlogResponse}
 //	@Router			/blog/my [get]
-func (handler *BlogHandlerImpl) GetMyBlog(c *gin.Context) {
+func (handler *blogHandlerImpl) GetMyBlog(c *gin.Context) {
 	username := c.GetString("username")
 	if username == "" {
 		helpers.ResponseBuilder(c, http.StatusUnauthorized, "get my blog", "you're not allowed to access this path", nil)
@@ -84,6 +86,7 @@ func (handler *BlogHandlerImpl) GetMyBlog(c *gin.Context) {
 }
 
 // GetUserBlog godoc
+//
 //	@Summary		Get user's blog information
 //	@Description	Get user's blog information (name, description, number of posts) by providing their username.
 //	@Tags			Blog
@@ -92,7 +95,7 @@ func (handler *BlogHandlerImpl) GetMyBlog(c *gin.Context) {
 //	@Success		200	{object}	helpers.ResponseWithData{data=dto.BlogResponse}
 //	@Failure		404	{object}	helpers.ResponseWithError{error=string}
 //	@Router			/blog/{username} [get]
-func (handler *BlogHandlerImpl) GetBlogByOwner(c *gin.Context) {
+func (handler *blogHandlerImpl) GetBlogByOwner(c *gin.Context) {
 	owner := c.Param("username")
 
 	blog, err := handler.uc.GetBlogByOwner(c, owner)

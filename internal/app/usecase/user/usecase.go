@@ -20,19 +20,19 @@ type UserUsecase interface {
 	UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) *helpers.Error
 }
 
-type UserUsecaseImpl struct {
+type userUsecaseImpl struct {
 	repo   repository.UserRepository
 	logger *slog.Logger
 }
 
 func NewUserUsecase(repository repository.UserRepository, logger *slog.Logger) UserUsecase {
-	return &UserUsecaseImpl{
+	return &userUsecaseImpl{
 		repo:   repository,
 		logger: logger,
 	}
 }
 
-func (uc *UserUsecaseImpl) GetUserDataByUsername(ctx context.Context, username string) (*dto.UserResponse, *helpers.Error) {
+func (uc *userUsecaseImpl) GetUserDataByUsername(ctx context.Context, username string) (*dto.UserResponse, *helpers.Error) {
 	data, err := uc.repo.FindByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -51,7 +51,7 @@ func (uc *UserUsecaseImpl) GetUserDataByUsername(ctx context.Context, username s
 	return user, nil
 }
 
-func (uc *UserUsecaseImpl) ChangePasswordByUsername(ctx context.Context, username string, data dto.UpdatePasswordRequest) *helpers.Error {
+func (uc *userUsecaseImpl) ChangePasswordByUsername(ctx context.Context, username string, data dto.UpdatePasswordRequest) *helpers.Error {
 	user, err := uc.repo.FindByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -81,7 +81,7 @@ func (uc *UserUsecaseImpl) ChangePasswordByUsername(ctx context.Context, usernam
 	return nil
 }
 
-func (uc *UserUsecaseImpl) UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) *helpers.Error {
+func (uc *userUsecaseImpl) UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) *helpers.Error {
 	user, err := uc.repo.FindByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

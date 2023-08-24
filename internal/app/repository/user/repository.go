@@ -8,22 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRepositoryImpl struct {
+type userRepositoryImpl struct {
 	db *gorm.DB
 }
 
 func NewUserRepository(db *gorm.DB) repository.UserRepository {
-	return &UserRepositoryImpl{
+	return &userRepositoryImpl{
 		db: db,
 	}
 }
 
-func (repo *UserRepositoryImpl) Create(ctx context.Context, data model.User, tx *gorm.DB) error {
+func (repo *userRepositoryImpl) Create(ctx context.Context, data model.User, tx *gorm.DB) error {
 	err := tx.WithContext(ctx).Create(&data).Error
 	return err
 }
 
-func (repo *UserRepositoryImpl) FindByUsername(ctx context.Context, username string) (*model.User, error) {
+func (repo *userRepositoryImpl) FindByUsername(ctx context.Context, username string) (*model.User, error) {
 	user := new(model.User)
 
 	err := repo.db.WithContext(ctx).First(user, "username = ?", username).Error
@@ -33,7 +33,7 @@ func (repo *UserRepositoryImpl) FindByUsername(ctx context.Context, username str
 	return user, nil
 }
 
-func (repo *UserRepositoryImpl) Update(ctx context.Context, data model.User) error {
+func (repo *userRepositoryImpl) Update(ctx context.Context, data model.User) error {
 	err := repo.db.WithContext(ctx).Updates(data).Error
 	return err
 }

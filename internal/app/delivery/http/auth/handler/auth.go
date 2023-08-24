@@ -14,12 +14,12 @@ type UserHandler interface {
 	Login(c *gin.Context)
 }
 
-type UserHandlerImpl struct {
+type userHandlerImpl struct {
 	uc authusecase.AuthUsecase
 }
 
 func NewAuthHandler(usecase authusecase.AuthUsecase) UserHandler {
-	return &UserHandlerImpl{
+	return &userHandlerImpl{
 		uc: usecase,
 	}
 }
@@ -36,7 +36,7 @@ func NewAuthHandler(usecase authusecase.AuthUsecase) UserHandler {
 //	@Failure		409	{object}	helpers.ResponseWithError
 //	@Failure		400	{object}	helpers.ResponseWithError{error=[]helpers.InputError}
 //	@Router			/auth/register [post]
-func (handler *UserHandlerImpl) Register(c *gin.Context) {
+func (handler *userHandlerImpl) Register(c *gin.Context) {
 	var data dto.RegisterRequest
 
 	err := c.ShouldBindJSON(&data)
@@ -67,7 +67,7 @@ func (handler *UserHandlerImpl) Register(c *gin.Context) {
 //	@Success		200	{object}	helpers.ResponseWithData{data=dto.LoginResponse}
 //	@Failure		401	{object}	helpers.ResponseWithError
 //	@Router			/auth/login [post]
-func (handler *UserHandlerImpl) Login(c *gin.Context) {
+func (handler *userHandlerImpl) Login(c *gin.Context) {
 	var data dto.LoginRequest
 
 	err := c.ShouldBindJSON(&data)

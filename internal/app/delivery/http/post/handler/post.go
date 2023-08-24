@@ -19,12 +19,12 @@ type PostHandler interface {
 	DeleteMyPostBySlug(c *gin.Context)
 }
 
-type PostHandlerImpl struct {
+type postHandlerImpl struct {
 	uc postusecase.PostUsecase
 }
 
 func NewPostHandler(uc postusecase.PostUsecase) PostHandler {
-	return &PostHandlerImpl{
+	return &postHandlerImpl{
 		uc: uc,
 	}
 }
@@ -39,7 +39,7 @@ func NewPostHandler(uc postusecase.PostUsecase) PostHandler {
 //	@Produce		json
 //	@Success		201	{object}	helpers.ResponseWithData{data=dto.CreatePostResponse}
 //	@Router			/blog/my/posts [post]
-func (handler *PostHandlerImpl) CreateNewPost(c *gin.Context) {
+func (handler *postHandlerImpl) CreateNewPost(c *gin.Context) {
 	var data dto.PostRequest
 	username := c.GetString("username")
 
@@ -71,7 +71,7 @@ func (handler *PostHandlerImpl) CreateNewPost(c *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	helpers.ResponseWithData{data=[]dto.PostResponse}
 //	@Router			/blog/my/posts [GET]
-func (handler *PostHandlerImpl) GetAllMyBlogPosts(c *gin.Context) {
+func (handler *postHandlerImpl) GetAllMyBlogPosts(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
@@ -97,7 +97,7 @@ func (handler *PostHandlerImpl) GetAllMyBlogPosts(c *gin.Context) {
 //	@Success			200	{object}	helpers.ResponseWithData{data=[]dto.PostResponse}
 //	@Failure			404	{object}	helpers.ResponseWithError
 //	@Router				/blog/{username}/posts [GET]
-func (handler *PostHandlerImpl) GetPostsByBlogOwner(c *gin.Context) {
+func (handler *postHandlerImpl) GetPostsByBlogOwner(c *gin.Context) {
 	username := c.Param("username")
 
 	posts, err := handler.uc.GetPostsByBlogOwner(c, username)
@@ -119,7 +119,7 @@ func (handler *PostHandlerImpl) GetPostsByBlogOwner(c *gin.Context) {
 //	@Success			200	{object}	helpers.ResponseWithData{data=dto.PostResponse}
 //	@Failure			404	{object}	helpers.ResponseWithError
 //	@Router				/blog/{username}/posts/{post_slug} [GET]
-func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
+func (handler *postHandlerImpl) GetPostBySlug(c *gin.Context) {
 	slug := c.Param("post_slug")
 	username := c.Param("username")
 	post, err := handler.uc.GetPostBySlug(c, username, slug)
@@ -142,7 +142,7 @@ func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
 //	@Success			200	{object}	helpers.ResponseWithoutDataAndError
 //	@Failure			404	{object}	helpers.ResponseWithError
 //	@Router				/blog/my/posts/{post_slug} [PUT]
-func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
+func (handler *postHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 	var data dto.PostRequest
 	slug := c.Param("post_slug")
 	username := c.GetString("username")
@@ -170,6 +170,8 @@ func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 //	@DeleteMyPostBySlug	godoc
 //	@Summary			Delete current user's post
 //	@Description		Delete current user's blog post by providing the post slug.
+//	@Description		When a post is deleted, all comments on the post will also be deleted.
+//	@Description		Also, if the post is part of someone's lists, the post in that list will also be deleted.
 //	@Tags				Post
 //	@Security			BearerToken
 //	@Param				post_slug	path	string	true	"post's slug"
@@ -177,7 +179,7 @@ func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 //	@Success			200	{object}	helpers.ResponseWithoutDataAndError
 //	@Failure			404	{object}	helpers.ResponseWithError
 //	@Router				/blog/my/posts/{post_slug} [DELETE]
-func (handler *PostHandlerImpl) DeleteMyPostBySlug(c *gin.Context) {
+func (handler *postHandlerImpl) DeleteMyPostBySlug(c *gin.Context) {
 	slug := c.Param("post_slug")
 	username := c.GetString("username")
 

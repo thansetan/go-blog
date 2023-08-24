@@ -15,24 +15,25 @@ type UserHandler interface {
 	UpdateMyInformation(c *gin.Context)
 }
 
-type UserHandlerImpl struct {
+type userHandlerImpl struct {
 	uc userusecase.UserUsecase
 }
 
 func NewUserHandler(usecase userusecase.UserUsecase) UserHandler {
-	return &UserHandlerImpl{
+	return &userHandlerImpl{
 		uc: usecase,
 	}
 }
 
 // MyInformation godoc
+//
 //	@Summary		Get current user information
 //	@Description	Get user information about current logged in user
 //	@Tags			User
 //	@Security		BearerToken
 //	@Product		200 {object} map[string]any
 //	@Router			/users/me [get]
-func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
+func (handler *userHandlerImpl) GetMyInformation(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
@@ -50,6 +51,7 @@ func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
 }
 
 // ChangePassword godoc
+//
 //	@Summary		Change user password
 //	@Description	Change user password by providing required data
 //	@Tags			User
@@ -58,7 +60,7 @@ func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	map[string]any
 //	@Router			/users/me/update-password [put]
-func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
+func (handler *userHandlerImpl) UpdateMyPassword(c *gin.Context) {
 	var data dto.UpdatePasswordRequest
 	username := c.GetString("username")
 
@@ -83,6 +85,7 @@ func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
 }
 
 // UpdateMyInformation godoc
+//
 //	@Summary		Update current user's information
 //	@Description	Update current user's information by providing required data
 //	@Tags			User
@@ -91,7 +94,7 @@ func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	map[string]any
 //	@Router			/users/me [put]
-func (handler *UserHandlerImpl) UpdateMyInformation(c *gin.Context) {
+func (handler *userHandlerImpl) UpdateMyInformation(c *gin.Context) {
 	var data dto.UserUpdateInfoRequest
 	username := c.GetString("username")
 

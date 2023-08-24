@@ -8,22 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
-type BlogRepositoryImpl struct {
+type blogRepositoryImpl struct {
 	db *gorm.DB
 }
 
 func NewBlogRepository(db *gorm.DB) repository.BlogRepository {
-	return &BlogRepositoryImpl{
+	return &blogRepositoryImpl{
 		db: db,
 	}
 }
 
-func (repo *BlogRepositoryImpl) Create(ctx context.Context, data model.Blog, tx *gorm.DB) error {
+func (repo *blogRepositoryImpl) Create(ctx context.Context, data model.Blog, tx *gorm.DB) error {
 	err := tx.WithContext(ctx).Create(&data).Error
 	return err
 }
 
-func (repo *BlogRepositoryImpl) FindByOwner(ctx context.Context, owner string) (*model.Blog, error) {
+func (repo *blogRepositoryImpl) FindByOwner(ctx context.Context, owner string) (*model.Blog, error) {
 	blog := new(model.Blog)
 
 	err := repo.db.WithContext(ctx).Preload("User").Preload("Posts").First(blog, "owner = ?", owner).Error
@@ -34,7 +34,7 @@ func (repo *BlogRepositoryImpl) FindByOwner(ctx context.Context, owner string) (
 	return blog, nil
 }
 
-func (repo *BlogRepositoryImpl) Update(ctx context.Context, data model.Blog) error {
+func (repo *blogRepositoryImpl) Update(ctx context.Context, data model.Blog) error {
 	newData := map[string]any{
 		"name":        data.Name,
 		"description": data.Description,

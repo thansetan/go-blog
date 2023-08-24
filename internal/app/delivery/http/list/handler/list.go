@@ -19,12 +19,12 @@ type ListHandler interface {
 	DeleteMyListBySlug(c *gin.Context)
 }
 
-type ListHandlerImpl struct {
+type listHandlerImpl struct {
 	uc listusecase.ListUsecase
 }
 
 func NewListHandler(uc listusecase.ListUsecase) ListHandler {
-	return &ListHandlerImpl{
+	return &listHandlerImpl{
 		uc: uc,
 	}
 }
@@ -39,7 +39,7 @@ func NewListHandler(uc listusecase.ListUsecase) ListHandler {
 //	@Produce		json
 //	@Success		201	{object}	helpers.ResponseWithData{data=dto.CreateListResponse}
 //	@Router			/lists/my [post]
-func (handler *ListHandlerImpl) CreateNewList(c *gin.Context) {
+func (handler *listHandlerImpl) CreateNewList(c *gin.Context) {
 	var data dto.ListRequest
 	username := c.GetString("username")
 
@@ -76,7 +76,7 @@ func (handler *ListHandlerImpl) CreateNewList(c *gin.Context) {
 //	@Failure			404	{object}	helpers.ResponseWithError
 //	@Failure			409	{object}	helpers.ResponseWithError
 //	@Router				/blog/{username}/posts/{post_slug}/save/{list_slug} [post]
-func (handler *ListHandlerImpl) AddPostToMyList(c *gin.Context) {
+func (handler *listHandlerImpl) AddPostToMyList(c *gin.Context) {
 	username := c.GetString("username")
 	postSlug := c.Param("post_slug")
 	blogOwner := c.Param("username")
@@ -105,7 +105,7 @@ func (handler *ListHandlerImpl) AddPostToMyList(c *gin.Context) {
 //	@Produce			json
 //	@Success			200	{object}	helpers.ResponseWithData{data=helpers.PostsInMyListResponse}
 //	@Router				/lists/my/{list_slug} [get]
-func (handler *ListHandlerImpl) GetPostsInMyListBySlug(c *gin.Context) {
+func (handler *listHandlerImpl) GetPostsInMyListBySlug(c *gin.Context) {
 	username := c.GetString("username")
 	listSlug := c.Param("list_slug")
 
@@ -132,7 +132,7 @@ func (handler *ListHandlerImpl) GetPostsInMyListBySlug(c *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	helpers.ResponseWithData{data=[]helpers.MyListResponse}
 //	@Router			/lists/my [get]
-func (handler *ListHandlerImpl) GetMyLists(c *gin.Context) {
+func (handler *listHandlerImpl) GetMyLists(c *gin.Context) {
 	username := c.GetString("username")
 
 	if username == "" {
@@ -160,7 +160,7 @@ func (handler *ListHandlerImpl) GetMyLists(c *gin.Context) {
 //	@Success					200	{object}	helpers.ResponseWithoutDataAndError
 //	@Failure					404	{object}	helpers.ResponseWithError
 //	@Router						/lists/my/{list_slug} [PUT]
-func (handler *ListHandlerImpl) UpdateMyListInformationBySlug(c *gin.Context) {
+func (handler *listHandlerImpl) UpdateMyListInformationBySlug(c *gin.Context) {
 	var data dto.ListRequest
 	username := c.GetString("username")
 	listSlug := c.Param("list_slug")
@@ -196,7 +196,7 @@ func (handler *ListHandlerImpl) UpdateMyListInformationBySlug(c *gin.Context) {
 //	@Success				200	{object}	helpers.ResponseWithoutDataAndError
 //	@Failure				404	{object}	helpers.ResponseWithError
 //	@Router					/lists/my/{list_slug}/{post_slug} [DELETE]
-func (handler *ListHandlerImpl) RemovePostFromMyList(c *gin.Context) {
+func (handler *listHandlerImpl) RemovePostFromMyList(c *gin.Context) {
 	username := c.GetString("username")
 	listSlug := c.Param("list_slug")
 	postSlug := c.Param("post_slug")
@@ -225,7 +225,7 @@ func (handler *ListHandlerImpl) RemovePostFromMyList(c *gin.Context) {
 //	@Success		200	{object}	helpers.ResponseWithoutDataAndError
 //	@Failure		404	{object}	helpers.ResponseWithError
 //	@Router			/lists/my/{list_slug} [DELETE]
-func (handler *ListHandlerImpl) DeleteMyListBySlug(c *gin.Context) {
+func (handler *listHandlerImpl) DeleteMyListBySlug(c *gin.Context) {
 	username := c.GetString("username")
 	listSlug := c.Param("list_slug")
 
