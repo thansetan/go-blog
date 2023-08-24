@@ -6,15 +6,16 @@ import (
 	listrepository "goproject/internal/app/repository/list"
 	postrepository "goproject/internal/app/repository/post"
 	listusecase "goproject/internal/app/usecase/list"
+	"log/slog"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func Route(r *gin.RouterGroup, db *gorm.DB) {
+func Route(r *gin.RouterGroup, db *gorm.DB, logger *slog.Logger) {
 	listRepository := listrepository.NewListRepository(db)
 	postRepository := postrepository.NewPostRepository(db)
-	usecase := listusecase.NewListUsecase(listRepository, postRepository)
+	usecase := listusecase.NewListUsecase(listRepository, postRepository, logger)
 	handler := listhandler.NewListHandler(usecase)
 
 	r.POST("/blog/:username/posts/:post_slug/save/:list_slug", middlewares.JWTAuthMiddleware(), handler.AddPostToMyList)

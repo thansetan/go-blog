@@ -7,34 +7,45 @@ import (
 	"goproject/internal/app/delivery/http/comment/dto"
 	"goproject/internal/domain/model"
 	"goproject/internal/domain/repository"
+	"goproject/internal/helpers"
+	"log/slog"
+	"net/http"
 	"slices"
 	"strconv"
+
+	"gorm.io/gorm"
 )
 
 type CommentUsecase interface {
-	CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) (uint, error)
-	GetCommentByUsername(ctx context.Context, username string) ([]dto.CommentResponse, error)
-	GetCommentByBlogOwnerAndPostSlug(ctx context.Context, blogOwner, postSlug string) ([]dto.CommentResponse, error)
-	DeleteCommentOnAPosst(ctx context.Context, username, blogOwner, postSlug string, commentID string) error
-	UpdateCommentOnAPost(ctx context.Context, username, blogOwner, postSlug string, commentID string, data dto.CommentRequest) error
+	CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) (uint, *helpers.Error)
+	GetCommentsByUsername(ctx context.Context, username string) ([]dto.CommentResponse, *helpers.Error)
+	GetCommentsByBlogOwnerAndPostSlug(ctx context.Context, blogOwner, postSlug string) ([]dto.CommentResponse, *helpers.Error)
+	DeleteCommentOnAPosst(ctx context.Context, username, blogOwner, postSlug string, commentID string) *helpers.Error
+	UpdateCommentOnAPost(ctx context.Context, username, blogOwner, postSlug string, commentID string, data dto.CommentRequest) *helpers.Error
 }
 
 type CommentUsecaseImpl struct {
 	commentRepo repository.CommentRepository
 	postRepo    repository.PostRepository
+	logger      *slog.Logger
 }
 
-func NewCommentUsecase(commentRepo repository.CommentRepository, postRepo repository.PostRepository) CommentUsecase {
+func NewCommentUsecase(commentRepo repository.CommentRepository, postRepo repository.PostRepository, logger *slog.Logger) CommentUsecase {
 	return &CommentUsecaseImpl{
 		postRepo:    postRepo,
 		commentRepo: commentRepo,
+		logger:      logger,
 	}
 }
 
-func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) (uint, error) {
+func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.CommentRequest, username, blogOwner, postSlug string) (uint, *helpers.Error) {
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
 	if err != nil {
-		return 0, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("post %s on %s's blog not found", postSlug, blogOwner))
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return 0, helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	commentData := model.Comment{
@@ -45,17 +56,19 @@ func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.Commen
 
 	id, err := uc.commentRepo.Create(ctx, commentData)
 	if err != nil {
-		return 0, err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return 0, helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 	return id, nil
 }
 
-func (uc *CommentUsecaseImpl) GetCommentByUsername(ctx context.Context, username string) ([]dto.CommentResponse, error) {
+func (uc *CommentUsecaseImpl) GetCommentsByUsername(ctx context.Context, username string) ([]dto.CommentResponse, *helpers.Error) {
 	commentsData := make([]dto.CommentResponse, 0)
 
 	comments, err := uc.commentRepo.FindCommentByUsername(ctx, username)
 	if err != nil {
-		return nil, err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return nil, helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	for _, comment := range comments {
@@ -71,17 +84,22 @@ func (uc *CommentUsecaseImpl) GetCommentByUsername(ctx context.Context, username
 	return commentsData, nil
 }
 
-func (uc *CommentUsecaseImpl) GetCommentByBlogOwnerAndPostSlug(ctx context.Context, blogOwner, postSlug string) ([]dto.CommentResponse, error) {
+func (uc *CommentUsecaseImpl) GetCommentsByBlogOwnerAndPostSlug(ctx context.Context, blogOwner, postSlug string) ([]dto.CommentResponse, *helpers.Error) {
 	commentsData := make([]dto.CommentResponse, 0)
 
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("post %s on %s's blog not found", postSlug, blogOwner))
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return nil, helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	comments, err := uc.commentRepo.FindCommentByPostID(ctx, post.ID)
 	if err != nil {
-		return nil, err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return nil, helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	for _, comment := range comments {
@@ -97,23 +115,28 @@ func (uc *CommentUsecaseImpl) GetCommentByBlogOwnerAndPostSlug(ctx context.Conte
 	return commentsData, nil
 }
 
-func (uc *CommentUsecaseImpl) DeleteCommentOnAPosst(ctx context.Context, username, blogOwner, postSlug string, commentID string) error {
+func (uc *CommentUsecaseImpl) DeleteCommentOnAPosst(ctx context.Context, username, blogOwner, postSlug string, commentID string) *helpers.Error {
 	// blog owner can delete any users comment on their post
 	// user (non blog owner) can ony delete their own comments on someone else's blog post
 
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
 	if err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("post %s on %s's blog not found", postSlug, blogOwner))
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	comments, err := uc.commentRepo.FindCommentByPostID(ctx, post.ID)
 	if err != nil {
-		return err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	id, err := strconv.ParseUint(commentID, 10, 64)
 	if err != nil {
-		return err
+		return helpers.ErrorBuilder(http.StatusBadRequest, "comment id must be a positive integer")
 	}
 
 	commentIdx := slices.IndexFunc(comments, func(c model.Comment) bool {
@@ -121,38 +144,43 @@ func (uc *CommentUsecaseImpl) DeleteCommentOnAPosst(ctx context.Context, usernam
 	})
 
 	if commentIdx == -1 {
-		return errors.New("comment not in this posts")
+		return helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("comment with id %s not found on this post", commentID))
 	}
 
 	if comments[commentIdx].Commenter != username && username != blogOwner {
-		fmt.Println(comments[commentIdx].Commenter, username, blogOwner)
-		return errors.New("you're not allowed to delete this comment")
+		return helpers.ErrorBuilder(http.StatusUnauthorized, "you're not allowed to delete this comment")
 	}
 
 	err = uc.commentRepo.Delete(ctx, comments[commentIdx])
 	if err != nil {
-		return err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	return nil
 }
 
-func (uc *CommentUsecaseImpl) UpdateCommentOnAPost(ctx context.Context, username, blogOwner, postSlug string, commentID string, data dto.CommentRequest) error {
+func (uc *CommentUsecaseImpl) UpdateCommentOnAPost(ctx context.Context, username, blogOwner, postSlug string, commentID string, data dto.CommentRequest) *helpers.Error {
 	// the only person able to edit a comment is the commenter
 
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
 	if err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("post %s on %s's blog not found", postSlug, blogOwner))
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	comments, err := uc.commentRepo.FindCommentByPostID(ctx, post.ID)
 	if err != nil {
-		return err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	id, err := strconv.ParseUint(commentID, 10, 64)
 	if err != nil {
-		return err
+		return helpers.ErrorBuilder(http.StatusBadRequest, "comment id must be a positive integer")
 	}
 
 	commentIdx := slices.IndexFunc(comments, func(c model.Comment) bool {
@@ -160,18 +188,19 @@ func (uc *CommentUsecaseImpl) UpdateCommentOnAPost(ctx context.Context, username
 	})
 
 	if commentIdx == -1 {
-		return errors.New("comment not in this posts")
+		return helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("comment with id %s not found on this post", commentID))
 	}
 
 	if comments[commentIdx].Commenter != username {
-		return errors.New("you're not allowed to modify this comment")
+		return helpers.ErrorBuilder(http.StatusUnauthorized, "you're not allowed to modify this comment")
 	}
 
 	comments[commentIdx].Content = data.Comment
 
 	err = uc.commentRepo.Update(ctx, comments[commentIdx])
 	if err != nil {
-		return err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	return nil

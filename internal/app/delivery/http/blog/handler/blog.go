@@ -50,9 +50,9 @@ func (handler *BlogHandlerImpl) UpdateBlogData(c *gin.Context) {
 		return
 	}
 
-	err = handler.uc.UpdateBlogData(c, username, blog)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update bog data", err.Error(), nil)
+	ucErr := handler.uc.UpdateBlogData(c, username, blog)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "update bog data", ucErr.String(), nil)
 		return
 	}
 
@@ -76,7 +76,7 @@ func (handler *BlogHandlerImpl) GetMyBlog(c *gin.Context) {
 
 	blog, err := handler.uc.GetBlogByOwner(c, username)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get my blog", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "get my blog", err.String(), nil)
 		return
 	}
 
@@ -96,7 +96,7 @@ func (handler *BlogHandlerImpl) GetBlogByOwner(c *gin.Context) {
 
 	blog, err := handler.uc.GetBlogByOwner(c, owner)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, fmt.Sprintf("get %s's blog", owner), err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, fmt.Sprintf("get %s's blog", owner), err.String(), nil)
 		return
 	}
 

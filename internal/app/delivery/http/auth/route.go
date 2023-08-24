@@ -6,14 +6,16 @@ import (
 	userrepository "goproject/internal/app/repository/user"
 	authusecase "goproject/internal/app/usecase/auth"
 
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func Route(r *gin.RouterGroup, db *gorm.DB) {
+func Route(r *gin.RouterGroup, db *gorm.DB, logger *slog.Logger) {
 	userRepository := userrepository.NewUserRepository(db)
 	blogRepository := blogrepository.NewBlogRepository(db)
-	usecase := authusecase.NewAuthUsecase(userRepository, blogRepository, db)
+	usecase := authusecase.NewAuthUsecase(userRepository, blogRepository, db, logger)
 	handler := authhandler.NewAuthHandler(usecase)
 
 	auth := r.Group("/auth")

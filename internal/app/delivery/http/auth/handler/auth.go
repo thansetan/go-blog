@@ -41,9 +41,9 @@ func (handler *UserHandlerImpl) Register(c *gin.Context) {
 		return
 	}
 
-	err = handler.uc.Register(c, data)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "register", err.Error(), nil)
+	ucErr := handler.uc.Register(c, data)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "register", ucErr.String(), nil)
 		return
 	}
 
@@ -67,9 +67,9 @@ func (handler *UserHandlerImpl) Login(c *gin.Context) {
 		return
 	}
 
-	resp, err := handler.uc.Login(c, data)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "login", err.Error(), nil)
+	resp, ucErr := handler.uc.Login(c, data)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "login", ucErr.String(), nil)
 		return
 	}
 

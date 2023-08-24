@@ -2,31 +2,44 @@ package userusecase
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"goproject/internal/app/delivery/http/user/dto"
 	"goproject/internal/domain/repository"
+	"goproject/internal/helpers"
 	"goproject/internal/utils"
+	"log/slog"
+	"net/http"
+
+	"gorm.io/gorm"
 )
 
 type UserUsecase interface {
-	GetUserDataByUsername(ctx context.Context, username string) (*dto.UserResponse, error)
-	ChangePasswordByUsername(ctx context.Context, username string, data dto.UpdatePasswordRequest) error
-	UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) error
+	GetUserDataByUsername(ctx context.Context, username string) (*dto.UserResponse, *helpers.Error)
+	ChangePasswordByUsername(ctx context.Context, username string, data dto.UpdatePasswordRequest) *helpers.Error
+	UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) *helpers.Error
 }
 
 type UserUsecaseImpl struct {
-	repo repository.UserRepository
+	repo   repository.UserRepository
+	logger *slog.Logger
 }
 
-func NewUserUsecase(repository repository.UserRepository) UserUsecase {
+func NewUserUsecase(repository repository.UserRepository, logger *slog.Logger) UserUsecase {
 	return &UserUsecaseImpl{
-		repo: repository,
+		repo:   repository,
+		logger: logger,
 	}
 }
 
-func (uc *UserUsecaseImpl) GetUserDataByUsername(ctx context.Context, username string) (*dto.UserResponse, error) {
+func (uc *UserUsecaseImpl) GetUserDataByUsername(ctx context.Context, username string) (*dto.UserResponse, *helpers.Error) {
 	data, err := uc.repo.FindByUsername(ctx, username)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("%s not found", username))
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return nil, helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	user := &dto.UserResponse{
@@ -38,35 +51,44 @@ func (uc *UserUsecaseImpl) GetUserDataByUsername(ctx context.Context, username s
 	return user, nil
 }
 
-func (uc *UserUsecaseImpl) ChangePasswordByUsername(ctx context.Context, username string, data dto.UpdatePasswordRequest) error {
+func (uc *UserUsecaseImpl) ChangePasswordByUsername(ctx context.Context, username string, data dto.UpdatePasswordRequest) *helpers.Error {
 	user, err := uc.repo.FindByUsername(ctx, username)
 	if err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("%s not found", username))
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	err = utils.IsValidPassword(user.Password, data.OldPassword)
 	if err != nil {
-		return err
+		return helpers.ErrorBuilder(http.StatusUnauthorized, "old password you provided is incorrect")
 	}
 
 	newPassword, err := utils.HashPassword(data.NewPassword)
 	if err != nil {
-		return err
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	user.Password = newPassword
 
 	err = uc.repo.Update(ctx, *user)
 	if err != nil {
-		return err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 	return nil
 }
 
-func (uc *UserUsecaseImpl) UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) error {
+func (uc *UserUsecaseImpl) UpdateUserInformation(ctx context.Context, username string, data dto.UserUpdateInfoRequest) *helpers.Error {
 	user, err := uc.repo.FindByUsername(ctx, username)
 	if err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return helpers.ErrorBuilder(http.StatusNotFound, fmt.Sprintf("%s not found", username))
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	user.Name = data.Name
@@ -74,7 +96,11 @@ func (uc *UserUsecaseImpl) UpdateUserInformation(ctx context.Context, username s
 
 	err = uc.repo.Update(ctx, *user)
 	if err != nil {
-		return err
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return helpers.ErrorBuilder(http.StatusConflict, "email already used")
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	return nil

@@ -6,15 +6,16 @@ import (
 	blogrepository "goproject/internal/app/repository/blog"
 	postrepository "goproject/internal/app/repository/post"
 	postusecase "goproject/internal/app/usecase/post"
+	"log/slog"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func Route(r *gin.RouterGroup, db *gorm.DB) {
+func Route(r *gin.RouterGroup, db *gorm.DB, logger *slog.Logger) {
 	postRepository := postrepository.NewPostRepository(db)
 	blogRepository := blogrepository.NewBlogRepository(db)
-	usecase := postusecase.NewPostUsecase(postRepository, blogRepository)
+	usecase := postusecase.NewPostUsecase(postRepository, blogRepository, logger)
 	handler := posthandler.NewPostHandler(usecase)
 
 	r.GET("/blog/:username/posts", handler.GetPostsByBlogOwner)

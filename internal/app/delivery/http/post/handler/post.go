@@ -53,9 +53,9 @@ func (handler *PostHandlerImpl) CreateNewPost(c *gin.Context) {
 		return
 	}
 
-	resp, err := handler.uc.CreateNewPost(c, username, data)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "create post", err.Error(), nil)
+	resp, ucErr := handler.uc.CreateNewPost(c, username, data)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "create post", ucErr.String(), nil)
 		return
 	}
 
@@ -80,7 +80,7 @@ func (handler *PostHandlerImpl) GetAllMyBlogPosts(c *gin.Context) {
 
 	posts, err := handler.uc.GetPostsByBlogOwner(c, username)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get my posts", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "get my posts", err.String(), nil)
 		return
 	}
 
@@ -100,7 +100,7 @@ func (handler *PostHandlerImpl) GetPostsByBlogOwner(c *gin.Context) {
 
 	posts, err := handler.uc.GetPostsByBlogOwner(c, username)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, fmt.Sprintf("get %s's posts", username), err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, fmt.Sprintf("get %s's posts", username), err.String(), nil)
 		return
 	}
 
@@ -121,7 +121,7 @@ func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
 	username := c.Param("username")
 	post, err := handler.uc.GetPostBySlug(c, username, slug)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get post", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "get post", err.String(), nil)
 		return
 	}
 
@@ -154,9 +154,9 @@ func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 		return
 	}
 
-	err = handler.uc.UpdatePostBySlug(c, data, username, slug)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update post", err.Error(), nil)
+	ucErr := handler.uc.UpdatePostBySlug(c, data, username, slug)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "update post", ucErr.String(), nil)
 		return
 	}
 
@@ -182,7 +182,7 @@ func (handler *PostHandlerImpl) DeleteMyPostBySlug(c *gin.Context) {
 	}
 	err := handler.uc.DeletePostBySlug(c, username, slug)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "delete post", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "delete post", err.String(), nil)
 		return
 	}
 

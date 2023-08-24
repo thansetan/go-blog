@@ -42,7 +42,7 @@ func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
 
 	user, err := handler.uc.GetUserDataByUsername(c, username)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get my information", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "get my information", err.String(), nil)
 		return
 	}
 
@@ -73,9 +73,9 @@ func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
 		return
 	}
 
-	err = handler.uc.ChangePasswordByUsername(c, username, data)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update password", err.Error(), nil)
+	ucErr := handler.uc.ChangePasswordByUsername(c, username, data)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "update password", ucErr.String(), nil)
 		return
 	}
 
@@ -106,9 +106,9 @@ func (handler *UserHandlerImpl) UpdateMyInformation(c *gin.Context) {
 		return
 	}
 
-	err = handler.uc.UpdateUserInformation(c, username, data)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update information", err.Error(), nil)
+	ucErr := handler.uc.UpdateUserInformation(c, username, data)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "update information", ucErr.String(), nil)
 		return
 	}
 

@@ -2,39 +2,45 @@ package authusecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"goproject/internal/app/delivery/http/auth/dto"
 	"goproject/internal/domain/model"
 	"goproject/internal/domain/repository"
+	"goproject/internal/helpers"
 	"goproject/internal/utils"
+	"log/slog"
+	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 )
 
 type AuthUsecase interface {
-	Register(ctx context.Context, data dto.RegisterRequest) error
-	Login(ctx context.Context, data dto.LoginRequest) (*dto.LoginResponse, error)
+	Register(ctx context.Context, data dto.RegisterRequest) *helpers.Error
+	Login(ctx context.Context, data dto.LoginRequest) (*dto.LoginResponse, *helpers.Error)
 }
 
 type AuthUsecaseImpl struct {
 	userRepo repository.UserRepository
 	blogRepo repository.BlogRepository
 	db       *gorm.DB
+	logger   *slog.Logger
 }
 
-func NewAuthUsecase(userRepo repository.UserRepository, blogRepo repository.BlogRepository, db *gorm.DB) AuthUsecase {
+func NewAuthUsecase(userRepo repository.UserRepository, blogRepo repository.BlogRepository, db *gorm.DB, logger *slog.Logger) AuthUsecase {
 	return &AuthUsecaseImpl{
 		userRepo: userRepo,
 		blogRepo: blogRepo,
 		db:       db,
+		logger:   logger,
 	}
 }
 
-func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterRequest) error {
+func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterRequest) *helpers.Error {
 	password, err := utils.HashPassword(data.Password)
 	if err != nil {
-		return err
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	userData := model.User{
@@ -54,15 +60,19 @@ func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterReques
 
 	err = uc.userRepo.Create(ctx, userData, tx)
 	if err != nil {
-		fmt.Println(err)
 		tx.Rollback()
-		return err
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return helpers.ErrorBuilder(http.StatusConflict, "username/email already used")
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	err = uc.blogRepo.Create(ctx, blogData, tx)
 	if err != nil {
-		fmt.Println(err)
 		tx.Rollback()
+		uc.logger.ErrorContext(ctx, err.Error())
+		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	tx.Commit()
@@ -70,15 +80,19 @@ func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterReques
 	return nil
 }
 
-func (uc *AuthUsecaseImpl) Login(ctx context.Context, data dto.LoginRequest) (*dto.LoginResponse, error) {
+func (uc *AuthUsecaseImpl) Login(ctx context.Context, data dto.LoginRequest) (*dto.LoginResponse, *helpers.Error) {
 	user, err := uc.userRepo.FindByUsername(ctx, data.Username)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, helpers.ErrorBuilder(http.StatusUnauthorized, "invalid username/password")
+		}
+		uc.logger.ErrorContext(ctx, err.Error())
+		return nil, helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	err = utils.IsValidPassword(user.Password, data.Password)
 	if err != nil {
-		return nil, err
+		return nil, helpers.ErrorBuilder(http.StatusUnauthorized, "invalid username/password")
 	}
 
 	resp := new(dto.LoginResponse)
@@ -89,7 +103,8 @@ func (uc *AuthUsecaseImpl) Login(ctx context.Context, data dto.LoginRequest) (*d
 
 	token, err := utils.GenerateJWT(claims)
 	if err != nil {
-		return nil, err
+		uc.logger.ErrorContext(ctx, err.Error())
+		return nil, helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
 
 	resp.Token = token

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"goproject/internal/infrastructure/database"
 	httproute "goproject/internal/infrastructure/http"
+	"goproject/internal/utils"
 	"os"
 
 	"goproject/docs"
@@ -35,10 +36,12 @@ func main() {
 		panic(err)
 	}
 
+	logger := utils.NewLogger()
+
 	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", host, port)
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
-	r := httproute.NewRoute(db.DB)
+	r := httproute.NewRoute(db.DB, logger)
 	r.Run(fmt.Sprintf("%s:%s", host, port))
 }

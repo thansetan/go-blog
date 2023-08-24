@@ -53,9 +53,9 @@ func (handler *ListHandlerImpl) CreateNewList(c *gin.Context) {
 		return
 	}
 
-	id, err := handler.uc.CreateNewList(c, data, username)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "create list", err.Error(), nil)
+	id, ucErr := handler.uc.CreateNewList(c, data, username)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "create list", ucErr.String(), nil)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (handler *ListHandlerImpl) AddPostToMyList(c *gin.Context) {
 
 	err := handler.uc.AddPostToMyList(c, listSlug, username, blogOwner, postSlug)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "add post to list", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "add post to list", err.String(), nil)
 		return
 	}
 
@@ -113,7 +113,7 @@ func (handler *ListHandlerImpl) GetPostsInMyListBySlug(c *gin.Context) {
 
 	list, err := handler.uc.GetPostsInAListBySlug(c, listSlug, username)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get posts in list", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "get posts in list", err.String(), nil)
 		return
 	}
 
@@ -138,7 +138,7 @@ func (handler *ListHandlerImpl) GetMyLists(c *gin.Context) {
 
 	lists, err := handler.uc.GetMyLists(c, username)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get lists", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "get lists", err.String(), nil)
 		return
 	}
 
@@ -171,9 +171,9 @@ func (handler *ListHandlerImpl) UpdateMyListInformationBySlug(c *gin.Context) {
 		return
 	}
 
-	err = handler.uc.UpdateListInformation(c, data, username, listSlug)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "update list", err.Error(), nil)
+	ucErr := handler.uc.UpdateListInformation(c, data, username, listSlug)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "update list", ucErr.String(), nil)
 		return
 	}
 
@@ -202,7 +202,7 @@ func (handler *ListHandlerImpl) RemovePostFromMyList(c *gin.Context) {
 
 	err := handler.uc.RemovePostFromList(c, username, postSlug, listSlug)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "remove post from list", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "remove post from list", err.String(), nil)
 		return
 	}
 
@@ -229,7 +229,7 @@ func (handler *ListHandlerImpl) DeleteMyListBySlug(c *gin.Context) {
 
 	err := handler.uc.DeleteListBySlug(c, username, listSlug)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "delete list", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "delete list", err.String(), nil)
 		return
 	}
 

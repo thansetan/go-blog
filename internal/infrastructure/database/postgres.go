@@ -36,7 +36,8 @@ func NewPostgresDB() (*Database, error) {
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Error),
+		Logger:         logger.Default.LogMode(logger.Error),
+		TranslateError: true,
 	})
 	if err != nil {
 		return nil, err

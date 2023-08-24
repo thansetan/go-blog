@@ -55,9 +55,9 @@ func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 		return
 	}
 
-	commentID, err := handler.uc.CreateComment(c, data, username, blogOwner, postSlug)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "create comment", err.Error(), nil)
+	commentID, ucErr := handler.uc.CreateComment(c, data, username, blogOwner, postSlug)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "create comment", ucErr.String(), nil)
 		return
 	}
 
@@ -79,9 +79,9 @@ func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
 		return
 	}
 
-	comments, err := handler.uc.GetCommentByUsername(c, username)
+	comments, err := handler.uc.GetCommentsByUsername(c, username)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get comments", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "get comments", err.String(), nil)
 		return
 	}
 
@@ -101,9 +101,9 @@ func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 	blogOwner := c.Param("username")
 	postSlug := c.Param("post_slug")
 
-	comments, err := handler.uc.GetCommentByBlogOwnerAndPostSlug(c, blogOwner, postSlug)
+	comments, err := handler.uc.GetCommentsByBlogOwnerAndPostSlug(c, blogOwner, postSlug)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "get comments", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "get comments", err.String(), nil)
 		return
 	}
 
@@ -134,7 +134,7 @@ func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 
 	err := handler.uc.DeleteCommentOnAPosst(c, username, blogOwner, postSlug, commentID)
 	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "delete comment", err.Error(), nil)
+		helpers.ResponseBuilder(c, err.Code, "delete comment", err.String(), nil)
 		return
 	}
 
@@ -171,9 +171,9 @@ func (handler *CommentHandlerImpl) EditMyCommentOnAPost(c *gin.Context) {
 		return
 	}
 
-	err = handler.uc.UpdateCommentOnAPost(c, username, blogOwner, postSlug, commentID, data)
-	if err != nil {
-		helpers.ResponseBuilder(c, http.StatusInternalServerError, "edit comment", err.Error(), nil)
+	ucErr := handler.uc.UpdateCommentOnAPost(c, username, blogOwner, postSlug, commentID, data)
+	if ucErr != nil {
+		helpers.ResponseBuilder(c, ucErr.Code, "edit comment", ucErr.String(), nil)
 		return
 	}
 

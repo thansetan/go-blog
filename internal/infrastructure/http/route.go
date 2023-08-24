@@ -9,6 +9,8 @@ import (
 	"goproject/internal/app/delivery/http/user"
 	"goproject/internal/helpers"
 
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
@@ -17,7 +19,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewRoute(db *gorm.DB) *gin.Engine {
+func NewRoute(db *gorm.DB, logger *slog.Logger) *gin.Engine {
 	r := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -26,12 +28,12 @@ func NewRoute(db *gorm.DB) *gin.Engine {
 
 	api := r.Group("/api/v1")
 
-	auth.Route(api, db)
-	user.Route(api, db)
-	blog.Route(api, db)
-	post.Route(api, db)
-	comment.Route(api, db)
-	list.Route(api, db)
+	auth.Route(api, db, logger)
+	user.Route(api, db, logger)
+	blog.Route(api, db, logger)
+	post.Route(api, db, logger)
+	comment.Route(api, db, logger)
+	list.Route(api, db, logger)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
