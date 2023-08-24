@@ -12,16 +12,16 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// @title Go-Blog
-// @version 1.0
-// @description A simple medium-like blog API, writen in Go
+//	@title			Go-Blog
+//	@version		1.0
+//	@description	A simple medium-like blog API, writen in Go
 
-// @securityDefinitions.apikey BearerToken
-// @in header
-// @name Authorization
-// @scheme bearer
-// @bearerFormat JWT
-// @description JWT Bearer Token. Need to Login to get the token. Usage: "Bearer <your-token-here>"
+//	@securityDefinitions.apikey	BearerToken
+//	@in							header
+//	@name						Authorization
+//	@scheme						bearer
+//	@bearerFormat				JWT
+//	@description				JWT Bearer Token. Need to Login to get the token. Usage: "Bearer <your-token-here>"
 func main() {
 	err := godotenv.Load()
 	if err != nil {

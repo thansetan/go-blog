@@ -6,7 +6,7 @@ type CommentRequest struct {
 	Comment string `json:"comment" binding:"required"`
 }
 
-type CreateComemntResponse struct {
+type CreateCommentResponse struct {
 	ID uint `json:"comment_id"`
 }
 

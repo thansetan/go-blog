@@ -25,13 +25,17 @@ func NewAuthHandler(usecase authusecase.AuthUsecase) UserHandler {
 }
 
 // UserRegister godoc
-// @Summary Create a user account
-// @Description Create a new account by providing required data. This will automatically create a blog named: <name>'s Blog
-// @Tags Auth
-// @Param Body body dto.RegisterRequest true "the body to register a user"
-// @Produce json
-// @Success 201 {object} map[string]any
-// @Router /auth/register [post]
+//
+//	@Summary		Create a new account
+//	@Description	Create a new account by providing required data. This will automatically create a blog named: "<user's name>'s blog".
+//	@Description	User's username and email must be unique. Meaning that there can't be 2 users using the same email/username.
+//	@Tags			Auth
+//	@Param			Body	body	dto.RegisterRequest	true	"data required to create a new account"
+//	@Produce		json
+//	@Success		201	{object}	helpers.ResponseWithoutDataAndError
+//	@Failure		409	{object}	helpers.ResponseWithError
+//	@Failure		400	{object}	helpers.ResponseWithError{error=[]helpers.InputError}
+//	@Router			/auth/register [post]
 func (handler *UserHandlerImpl) Register(c *gin.Context) {
 	var data dto.RegisterRequest
 
@@ -51,13 +55,18 @@ func (handler *UserHandlerImpl) Register(c *gin.Context) {
 }
 
 // UserLogin godoc
-// @Summary Login as a user
-// @Description Logging in by providing required data to get JWT
-// @Tags Auth
-// @Param Body body dto.LoginRequest true "the body to login as a user"
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /auth/login [post]
+//
+//	@Summary		Login as an existing user
+//	@Description	Log in as an existing user by providing a username and password
+//
+//	@Description	Upon successful login, a JWT will be provided
+//
+//	@Tags			Auth
+//	@Param			Body	body	dto.LoginRequest	true	"data required to login to an existing account"
+//	@Produce		json
+//	@Success		200	{object}	helpers.ResponseWithData{data=dto.LoginResponse}
+//	@Failure		401	{object}	helpers.ResponseWithError
+//	@Router			/auth/login [post]
 func (handler *UserHandlerImpl) Login(c *gin.Context) {
 	var data dto.LoginRequest
 

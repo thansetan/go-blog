@@ -51,7 +51,7 @@ func (uc *AuthUsecaseImpl) Register(ctx context.Context, data dto.RegisterReques
 	}
 
 	blogData := model.Blog{
-		Name:        fmt.Sprintf("%s's Blog", data.Name),
+		Name:        fmt.Sprintf("%s's blog", data.Name),
 		Description: fmt.Sprintf("%s's blog description", data.Name),
 		Owner:       data.Username,
 	}

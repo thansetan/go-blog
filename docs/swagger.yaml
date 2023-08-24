@@ -1,7 +1,50 @@
 definitions:
+  dto.BlogResponse:
+    properties:
+      blog_description:
+        type: string
+      blog_name:
+        type: string
+      blog_owner:
+        type: string
+      num_of_posts:
+        type: integer
+    type: object
   dto.CommentRequest:
     properties:
       comment:
+        type: string
+    required:
+    - comment
+    type: object
+  dto.CommentResponse:
+    properties:
+      comment:
+        type: string
+      comment_id:
+        type: integer
+      commenter:
+        type: string
+      created_at:
+        type: string
+      post_url:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.CreateCommentResponse:
+    properties:
+      comment_id:
+        type: integer
+    type: object
+  dto.CreateListResponse:
+    properties:
+      slug:
+        type: string
+    type: object
+  dto.CreatePostResponse:
+    properties:
+      post_slug:
         type: string
     type: object
   dto.ListRequest:
@@ -10,6 +53,8 @@ definitions:
         type: string
       name:
         type: string
+    required:
+    - name
     type: object
   dto.LoginRequest:
     properties:
@@ -17,12 +62,38 @@ definitions:
         type: string
       username:
         type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.LoginResponse:
+    properties:
+      token:
+        type: string
     type: object
   dto.PostRequest:
     properties:
       content:
         type: string
       title:
+        type: string
+    required:
+    - content
+    - title
+    type: object
+  dto.PostResponse:
+    properties:
+      author:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      post_slug:
+        type: string
+      title:
+        type: string
+      updated_at:
         type: string
     type: object
   dto.RegisterRequest:
@@ -32,9 +103,17 @@ definitions:
       name:
         type: string
       password:
+        maxLength: 32
+        minLength: 8
         type: string
       username:
+        minLength: 6
         type: string
+    required:
+    - email
+    - name
+    - password
+    - username
     type: object
   dto.UpdateBlogRequest:
     properties:
@@ -42,13 +121,20 @@ definitions:
         type: string
       name:
         type: string
+    required:
+    - name
     type: object
   dto.UpdatePasswordRequest:
     properties:
       new_password:
+        maxLength: 32
+        minLength: 8
         type: string
       old_password:
         type: string
+    required:
+    - new_password
+    - old_password
     type: object
   dto.UserUpdateInfoRequest:
     properties:
@@ -56,6 +142,63 @@ definitions:
         type: string
       name:
         type: string
+    required:
+    - email
+    - name
+    type: object
+  helpers.InputError:
+    properties:
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  helpers.MyListResponse:
+    properties:
+      description:
+        type: string
+      list_slug:
+        type: string
+      name:
+        type: string
+      num_of_posts:
+        type: integer
+    type: object
+  helpers.PostsInMyListResponse:
+    properties:
+      description:
+        type: string
+      list_slug:
+        type: string
+      name:
+        type: string
+      posts:
+        items:
+          $ref: '#/definitions/dto.PostResponse'
+        type: array
+    type: object
+  helpers.ResponseWithData:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  helpers.ResponseWithError:
+    properties:
+      error: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  helpers.ResponseWithoutDataAndError:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
     type: object
 info:
   contact: {}
@@ -65,9 +208,11 @@ info:
 paths:
   /auth/login:
     post:
-      description: Logging in by providing required data to get JWT
+      description: |-
+        Log in as an existing user by providing a username and password
+        Upon successful login, a JWT will be provided
       parameters:
-      - description: the body to login as a user
+      - description: data required to login to an existing account
         in: body
         name: Body
         required: true
@@ -79,17 +224,26 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: Login as a user
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.LoginResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
+      summary: Login as an existing user
       tags:
       - Auth
   /auth/register:
     post:
-      description: 'Create a new account by providing required data. This will automatically
-        create a blog named: <name>''s Blog'
+      description: |-
+        Create a new account by providing required data. This will automatically create a blog named: "<user's name>'s blog".
+        User's username and email must be unique. Meaning that there can't be 2 users using the same email/username.
       parameters:
-      - description: the body to register a user
+      - description: data required to create a new account
         in: body
         name: Body
         required: true
@@ -101,14 +255,29 @@ paths:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
-      summary: Create a user account
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithError'
+            - properties:
+                error:
+                  items:
+                    $ref: '#/definitions/helpers.InputError'
+                  type: array
+              type: object
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
+      summary: Create a new account
       tags:
       - Auth
   /blog/{username}:
     get:
-      description: Get information about user blog
+      description: Get user's blog information (name, description, number of posts)
+        by providing their username.
       parameters:
       - description: Username of the user
         in: path
@@ -121,16 +290,29 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: Get user blog information
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BlogResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithError'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Get user's blog information
       tags:
       - Blog
   /blog/{username}/posts:
     get:
-      description: Get all user's blog posts by providing username
+      description: Get user's blog posts by providing their username.
       parameters:
-      - description: Username of the user
+      - description: user's username
         in: path
         name: username
         required: true
@@ -141,21 +323,32 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: Get all blog posts of a user
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.PostResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
+      summary: Get a user's blog posts
       tags:
       - Post
   /blog/{username}/posts/{post_slug}:
     get:
-      description: Get a user post by providing their username and the post slug
+      description: Get a specific post by providing their username and the post's
+        slug.
       parameters:
-      - description: Username of the user
+      - description: user's username
         in: path
         name: username
         required: true
         type: string
-      - description: Slug of the post
+      - description: post's slug
         in: path
         name: post_slug
         required: true
@@ -166,21 +359,29 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: Get a user post by slug
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PostResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
+      summary: Get a specific post
       tags:
       - Post
   /blog/{username}/posts/{post_slug}/comments:
     get:
-      description: Get all comments on a post
+      description: Get all comments on a post by post's URL.
       parameters:
       - description: blog owner's username
         in: path
         name: username
         required: true
         type: string
-      - description: post slug
+      - description: post's slug
         in: path
         name: post_slug
         required: true
@@ -191,15 +392,23 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.CommentResponse'
+                  type: array
+              type: object
       summary: Get comments on a post
       tags:
       - Comment
     post:
-      description: Create a comment on a blog post by providing required data
+      description: |-
+        Create a new comment on a blog post.
+        Upon successful creation, it will returns the newly created comment's ID.
       parameters:
-      - description: the body to create a comment
+      - description: data required to create a comment
         in: body
         name: Body
         required: true
@@ -210,7 +419,7 @@ paths:
         name: username
         required: true
         type: string
-      - description: post slug
+      - description: post's slug
         in: path
         name: post_slug
         required: true
@@ -221,8 +430,16 @@ paths:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CreateCommentResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
       summary: Create a comment on a blog post
@@ -230,19 +447,22 @@ paths:
       - Comment
   /blog/{username}/posts/{post_slug}/comments/{comment_id}:
     delete:
-      description: Delete comment by ID
+      description: |-
+        Delete a comment on a post by comment's ID.
+        A non-blog-owner user can only delete their own comment.
+        Blog's owner is allowed to delete ANY comment on their posts.
       parameters:
       - description: blog owner's username
         in: path
         name: username
         required: true
         type: string
-      - description: post slug
+      - description: post's slug
         in: path
         name: post_slug
         required: true
         type: string
-      - description: comment ID
+      - description: comment's ID
         in: path
         name: comment_id
         required: true
@@ -253,33 +473,36 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
-      summary: Delete comment by ID
+      summary: Delete a comment
       tags:
       - Comment
     put:
-      description: Edit user's comment on a post by providing comment ID
+      description: Edit current user's comment on a post by providing comment ID.
       parameters:
       - description: blog owner's username
         in: path
         name: username
         required: true
         type: string
-      - description: post slug
+      - description: post's slug
         in: path
         name: post_slug
         required: true
         type: string
-      - description: body required to modify comment
+      - description: data required to modify comment
         in: body
         name: Body
         required: true
         schema:
           $ref: '#/definitions/dto.CommentRequest'
-      - description: comment ID
+      - description: comment's ID
         in: path
         name: comment_id
         required: true
@@ -290,23 +513,27 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
-      summary: Edit user's comment on a post
+      summary: Edit current user's comment on a post
       tags:
       - Comment
   /blog/{username}/posts/{post_slug}/save/{list_slug}:
     post:
-      description: Add post to user's list by providing required data
+      description: Add a post to the current user's list by providing the slug of
+        the list to which the user wants to add the post.
       parameters:
       - description: blog owner's username
         in: path
         name: username
         required: true
         type: string
-      - description: post slug
+      - description: post's slug
         in: path
         name: post_slug
         required: true
@@ -322,33 +549,45 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
-      summary: Add post to my list
+      summary: Add post to current user's list
       tags:
       - List
   /blog/my:
     get:
-      description: Get information about my blog
+      description: Get current user's blog information (name, description, number
+        of posts).
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BlogResponse'
+              type: object
       security:
       - BearerToken: []
-      summary: Get my blog information
+      summary: Get current user's blog information
       tags:
       - Blog
     put:
-      description: Change user's blog name by providing required data
+      description: Change current user's blog name and description.
       parameters:
-      - description: the body to change user's blog name
+      - description: data required to change user's blog information
         in: body
         name: Body
         required: true
@@ -360,33 +599,41 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
       security:
       - BearerToken: []
-      summary: Change user's blog name
+      summary: Change current user's blog information
       tags:
       - Blog
   /blog/my/posts:
     get:
-      description: Get all user's blog posts by providing JWT auth
+      description: Get all current user's blog posts. When there are no posts, it
+        will return an empty array ([]).
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.PostResponse'
+                  type: array
+              type: object
       security:
       - BearerToken: []
-      summary: Get all user's blog posts
+      summary: Get all current user's blog posts
       tags:
       - Post
     post:
-      description: Create a new blog post by providing required data
+      description: |-
+        Create a new post on current user's blog.
+        Upon successful creation, it will return the newly created post's slug
       parameters:
-      - description: the body to create a new post
+      - description: data required to create a new post
         in: body
         name: Body
         required: true
@@ -398,8 +645,12 @@ paths:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CreatePostResponse'
+              type: object
       security:
       - BearerToken: []
       summary: Create a new blog post
@@ -407,9 +658,9 @@ paths:
       - Post
   /blog/my/posts/{post_slug}:
     delete:
-      description: Delete user blog post by providing the post slug
+      description: Delete current user's blog post by providing the post slug.
       parameters:
-      - description: Slug of the post
+      - description: post's slug
         in: path
         name: post_slug
         required: true
@@ -420,23 +671,27 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
-      summary: Delete user post by slug
+      summary: Delete current user's post
       tags:
       - Post
     put:
-      description: Update user blog post by providing the post slug
+      description: Update/modify current user's blog post by providing the post's
+        slug.
       parameters:
-      - description: the body to create a new post
+      - description: data required to update/modify a post
         in: body
         name: Body
         required: true
         schema:
           $ref: '#/definitions/dto.PostRequest'
-      - description: Slug of the post
+      - description: post's slug
         in: path
         name: post_slug
         required: true
@@ -447,33 +702,46 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
-      summary: Update user post by slug
+      summary: Update/modify current user's post
       tags:
       - Post
   /lists/my:
     get:
-      description: Get current user's lists by providing required data
+      description: |-
+        Get all of current user's lists
+        Will return an empty array ([]) if the user has no lists.
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/helpers.MyListResponse'
+                  type: array
+              type: object
       security:
       - BearerToken: []
       summary: Get current user's lists
       tags:
       - List
     post:
-      description: Create a new list for user by providing required data
+      description: |-
+        Create a new list for current user by providing required data.
+        Upon successful creation, it will return the newly created list's slug.
       parameters:
-      - description: body required to create a new list
+      - description: data required to create a new list
         in: body
         name: Body
         required: true
@@ -485,18 +753,22 @@ paths:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CreateListResponse'
+              type: object
       security:
       - BearerToken: []
-      summary: Create a new list for user
+      summary: Create a new list
       tags:
       - List
   /lists/my/{list_slug}:
     delete:
-      description: Delete current user's list by providing the list ID
+      description: Delete current user's list by providing the list slug
       parameters:
-      - description: list slug you want to remove
+      - description: slug of the list you want to remove
         in: path
         name: list_slug
         required: true
@@ -507,17 +779,20 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
-      summary: Delete current user's list by ID
+      summary: Delete current user's list
       tags:
       - List
     get:
-      description: Get posts in my list by providing required data
+      description: Get posts in my current user's by providing the list's slug.
       parameters:
-      - description: list slug you want to get
+      - description: slug of the list you want to get the post from
         in: path
         name: list_slug
         required: true
@@ -528,23 +803,27 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpers.PostsInMyListResponse'
+              type: object
       security:
       - BearerToken: []
-      summary: Get posts in my list
+      summary: Get posts in current user's list
       tags:
       - List
     put:
-      description: Update current user's list information (name and description) by
-        providing the list ID
+      description: Update/modify current user's list information (name and description)
+        by providing the list's slug.
       parameters:
       - description: list slug you want to edit
         in: path
         name: list_slug
         required: true
         type: string
-      - description: body to update
+      - description: body required to update/modify list information
         in: body
         name: body
         schema:
@@ -555,24 +834,27 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
-      summary: Update current user's list by ID
+      summary: Update/modify current user's list information
       tags:
       - List
   /lists/my/{list_slug}/{post_slug}:
     delete:
-      description: Remove post from current user's list by providing the list ID and
-        post slug
+      description: Remove a post from current user's list by providing the list slug
+        and post slug you want to remove.
       parameters:
       - description: list slug you want to remove post from
         in: path
         name: list_slug
         required: true
         type: string
-      - description: post slug you want to delete
+      - description: post slug you want to remove
         in: path
         name: post_slug
         required: true
@@ -583,24 +865,31 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/helpers.ResponseWithoutDataAndError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.ResponseWithError'
       security:
       - BearerToken: []
-      summary: Remove post from current user's list
+      summary: Remove a post from current user's list
       tags:
       - List
   /my/comments:
     get:
-      description: Get current user's comments on all posts
+      description: Get current user's comments on all posts.
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            allOf:
+            - $ref: '#/definitions/helpers.ResponseWithData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CommentResponse'
+              type: object
       security:
       - BearerToken: []
       summary: Get current user's comments

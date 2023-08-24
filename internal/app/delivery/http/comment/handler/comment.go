@@ -27,17 +27,19 @@ func NewCommentHandler(uc commentusecase.CommentUsecase) CommentHandler {
 	}
 }
 
-// @CreateComment godoc
-// @Summary Create a comment on a blog post
-// @Description Create a comment on a blog post by providing required data
-// @Tags Comment
-// @Param Body body dto.CommentRequest true "the body to create a comment"
-// @Param username path string true "blog owner's username"
-// @Param post_slug path string true "post slug"
-// @Security BearerToken
-// @Produce json
-// @Success 201 {object} map[string]any
-// @Router /blog/{username}/posts/{post_slug}/comments [post]
+//	@CreateComment	godoc
+//	@Summary		Create a comment on a blog post
+//	@Description	Create a new comment on a blog post.
+//	@Description	Upon successful creation, it will returns the newly created comment's ID.
+//	@Tags			Comment
+//	@Param			Body		body	dto.CommentRequest	true	"data required to create a comment"
+//	@Param			username	path	string				true	"blog owner's username"
+//	@Param			post_slug	path	string				true	"post's slug"
+//	@Security		BearerToken
+//	@Produce		json
+//	@Success		201	{object}	helpers.ResponseWithData{data=dto.CreateCommentResponse}
+//	@Failure		404	{object}	helpers.ResponseWithError
+//	@Router			/blog/{username}/posts/{post_slug}/comments [post]
 func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 	var data dto.CommentRequest
 	blogOwner := c.Param("username")
@@ -64,14 +66,14 @@ func (handler *CommentHandlerImpl) CreateComment(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusCreated, "create comment", nil, commentID)
 }
 
-// @GetMyComments Godoc
-// @Summary Get current user's comments
-// @Description Get current user's comments on all posts
-// @Tags Comment
-// @Security BearerToken
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /my/comments [get]
+//	@GetMyComments	Godoc
+//	@Summary		Get current user's comments
+//	@Description	Get current user's comments on all posts.
+//	@Tags			Comment
+//	@Security		BearerToken
+//	@Produce		json
+//	@Success		200	{object}	helpers.ResponseWithData{data=dto.CommentResponse}
+//	@Router			/my/comments [get]
 func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
 	username := c.GetString("username")
 	if username == "" {
@@ -88,15 +90,15 @@ func (handler *CommentHandlerImpl) GetMyComments(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusOK, "get comments", nil, comments)
 }
 
-// @GetCommentOnAPost Godoc
-// @Summary Get comments on a post
-// @Description Get all comments on a post
-// @Tags Comment
-// @Param username path string true "blog owner's username"
-// @Param post_slug path string true "post slug"
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/{username}/posts/{post_slug}/comments [get]
+//	@GetCommentOnAPost	Godoc
+//	@Summary			Get comments on a post
+//	@Description		Get all comments on a post by post's URL.
+//	@Tags				Comment
+//	@Param				username	path	string	true	"blog owner's username"
+//	@Param				post_slug	path	string	true	"post's slug"
+//	@Produce			json
+//	@Success			200	{object}	helpers.ResponseWithData{data=[]dto.CommentResponse}
+//	@Router				/blog/{username}/posts/{post_slug}/comments [get]
 func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 	blogOwner := c.Param("username")
 	postSlug := c.Param("post_slug")
@@ -110,17 +112,20 @@ func (handler *CommentHandlerImpl) GetCommentsOnAPost(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusOK, "get comments", nil, comments)
 }
 
-// @DeleteCommentByID Godoc
-// @Summary Delete comment by ID
-// @Description Delete comment by ID
-// @Tags Comment
-// @Param username path string true "blog owner's username"
-// @Param post_slug path string true "post slug"
-// @Param comment_id path int true "comment ID"
-// @Security BearerToken
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/{username}/posts/{post_slug}/comments/{comment_id} [delete]
+//	@DeleteCommentByID	Godoc
+//	@Summary			Delete a comment
+//	@Description		Delete a comment on a post by comment's ID.
+//	@Description		A non-blog-owner user can only delete their own comment.
+//	@Description		Blog's owner is allowed to delete ANY comment on their posts.
+//	@Tags				Comment
+//	@Param				username	path	string	true	"blog owner's username"
+//	@Param				post_slug	path	string	true	"post's slug"
+//	@Param				comment_id	path	int		true	"comment's ID"
+//	@Security			BearerToken
+//	@Produce			json
+//	@Success			200	{object}	helpers.ResponseWithoutDataAndError
+//	@Failure			404	{object}	helpers.ResponseWithError
+//	@Router				/blog/{username}/posts/{post_slug}/comments/{comment_id} [delete]
 func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 	blogOwner := c.Param("username")
 	postSlug := c.Param("post_slug")
@@ -141,18 +146,19 @@ func (handler *CommentHandlerImpl) DeleteCommentByID(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusOK, "delete comment", nil, nil)
 }
 
-// @EditMyCommentOnAPost Godoc
-// @Summary Edit user's comment on a post
-// @Description Edit user's comment on a post by providing comment ID
-// @Tags Comment
-// @Param username path string true "blog owner's username"
-// @Param post_slug path string true "post slug"
-// @Param Body body dto.CommentRequest true "body required to modify comment"
-// @Param comment_id path int true "comment ID"
-// @Security BearerToken
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/{username}/posts/{post_slug}/comments/{comment_id} [put]
+//	@EditMyCommentOnAPost	Godoc
+//	@Summary				Edit current user's comment on a post
+//	@Description			Edit current user's comment on a post by providing comment ID.
+//	@Tags					Comment
+//	@Param					username	path	string				true	"blog owner's username"
+//	@Param					post_slug	path	string				true	"post's slug"
+//	@Param					Body		body	dto.CommentRequest	true	"data required to modify comment"
+//	@Param					comment_id	path	int					true	"comment's ID"
+//	@Security				BearerToken
+//	@Produce				json
+//	@Success				200	{object}	helpers.ResponseWithoutDataAndError
+//	@Failure				404	{object}	helpers.ResponseWithError
+//	@Router					/blog/{username}/posts/{post_slug}/comments/{comment_id} [put]
 func (handler *CommentHandlerImpl) EditMyCommentOnAPost(c *gin.Context) {
 	var data dto.CommentRequest
 	blogOwner := c.Param("username")

@@ -18,17 +18,17 @@ const docTemplate = `{
     "paths": {
         "/auth/login": {
             "post": {
-                "description": "Logging in by providing required data to get JWT",
+                "description": "Log in as an existing user by providing a username and password\nUpon successful login, a JWT will be provided",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Login as a user",
+                "summary": "Login as an existing user",
                 "parameters": [
                     {
-                        "description": "the body to login as a user",
+                        "description": "data required to login to an existing account",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -41,8 +41,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.LoginResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -50,17 +67,17 @@ const docTemplate = `{
         },
         "/auth/register": {
             "post": {
-                "description": "Create a new account by providing required data. This will automatically create a blog named: \u003cname\u003e's Blog",
+                "description": "Create a new account by providing required data. This will automatically create a blog named: \"\u003cuser's name\u003e's blog\".\nUser's username and email must be unique. Meaning that there can't be 2 users using the same email/username.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Create a user account",
+                "summary": "Create a new account",
                 "parameters": [
                     {
-                        "description": "the body to register a user",
+                        "description": "data required to create a new account",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -73,8 +90,34 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithError"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/helpers.InputError"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -87,20 +130,31 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Get information about my blog",
+                "description": "Get current user's blog information (name, description, number of posts).",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Blog"
                 ],
-                "summary": "Get my blog information",
+                "summary": "Get current user's blog information",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BlogResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -111,17 +165,17 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Change user's blog name by providing required data",
+                "description": "Change current user's blog name and description.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Blog"
                 ],
-                "summary": "Change user's blog name",
+                "summary": "Change current user's blog information",
                 "parameters": [
                     {
-                        "description": "the body to change user's blog name",
+                        "description": "data required to change user's blog information",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -134,8 +188,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
                         }
                     }
                 }
@@ -148,20 +201,34 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Get all user's blog posts by providing JWT auth",
+                "description": "Get all current user's blog posts. When there are no posts, it will return an empty array ([]).",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Post"
                 ],
-                "summary": "Get all user's blog posts",
+                "summary": "Get all current user's blog posts",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.PostResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -172,7 +239,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Create a new blog post by providing required data",
+                "description": "Create a new post on current user's blog.\nUpon successful creation, it will return the newly created post's slug",
                 "produces": [
                     "application/json"
                 ],
@@ -182,7 +249,7 @@ const docTemplate = `{
                 "summary": "Create a new blog post",
                 "parameters": [
                     {
-                        "description": "the body to create a new post",
+                        "description": "data required to create a new post",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -195,8 +262,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CreatePostResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -209,17 +287,17 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Update user blog post by providing the post slug",
+                "description": "Update/modify current user's blog post by providing the post's slug.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Post"
                 ],
-                "summary": "Update user post by slug",
+                "summary": "Update/modify current user's post",
                 "parameters": [
                     {
-                        "description": "the body to create a new post",
+                        "description": "data required to update/modify a post",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -229,7 +307,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Slug of the post",
+                        "description": "post's slug",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
@@ -239,8 +317,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -251,18 +334,18 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Delete user blog post by providing the post slug",
+                "description": "Delete current user's blog post by providing the post slug.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Post"
                 ],
-                "summary": "Delete user post by slug",
+                "summary": "Delete current user's post",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Slug of the post",
+                        "description": "post's slug",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
@@ -272,8 +355,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -281,14 +369,14 @@ const docTemplate = `{
         },
         "/blog/{username}": {
             "get": {
-                "description": "Get information about user blog",
+                "description": "Get user's blog information (name, description, number of posts) by providing their username.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Blog"
                 ],
-                "summary": "Get user blog information",
+                "summary": "Get user's blog information",
                 "parameters": [
                     {
                         "type": "string",
@@ -302,8 +390,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BlogResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithError"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -311,18 +428,18 @@ const docTemplate = `{
         },
         "/blog/{username}/posts": {
             "get": {
-                "description": "Get all user's blog posts by providing username",
+                "description": "Get user's blog posts by providing their username.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Post"
                 ],
-                "summary": "Get all blog posts of a user",
+                "summary": "Get a user's blog posts",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Username of the user",
+                        "description": "user's username",
                         "name": "username",
                         "in": "path",
                         "required": true
@@ -332,8 +449,28 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.PostResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -341,25 +478,25 @@ const docTemplate = `{
         },
         "/blog/{username}/posts/{post_slug}": {
             "get": {
-                "description": "Get a user post by providing their username and the post slug",
+                "description": "Get a specific post by providing their username and the post's slug.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Post"
                 ],
-                "summary": "Get a user post by slug",
+                "summary": "Get a specific post",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Username of the user",
+                        "description": "user's username",
                         "name": "username",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Slug of the post",
+                        "description": "post's slug",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
@@ -369,8 +506,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.PostResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -378,7 +532,7 @@ const docTemplate = `{
         },
         "/blog/{username}/posts/{post_slug}/comments": {
             "get": {
-                "description": "Get all comments on a post",
+                "description": "Get all comments on a post by post's URL.",
                 "produces": [
                     "application/json"
                 ],
@@ -396,7 +550,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "post slug",
+                        "description": "post's slug",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
@@ -406,8 +560,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.CommentResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -418,7 +586,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Create a comment on a blog post by providing required data",
+                "description": "Create a new comment on a blog post.\nUpon successful creation, it will returns the newly created comment's ID.",
                 "produces": [
                     "application/json"
                 ],
@@ -428,7 +596,7 @@ const docTemplate = `{
                 "summary": "Create a comment on a blog post",
                 "parameters": [
                     {
-                        "description": "the body to create a comment",
+                        "description": "data required to create a comment",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -445,7 +613,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "post slug",
+                        "description": "post's slug",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
@@ -455,8 +623,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CreateCommentResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -469,14 +654,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Edit user's comment on a post by providing comment ID",
+                "description": "Edit current user's comment on a post by providing comment ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Comment"
                 ],
-                "summary": "Edit user's comment on a post",
+                "summary": "Edit current user's comment on a post",
                 "parameters": [
                     {
                         "type": "string",
@@ -487,13 +672,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "post slug",
+                        "description": "post's slug",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "body required to modify comment",
+                        "description": "data required to modify comment",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -503,7 +688,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "comment ID",
+                        "description": "comment's ID",
                         "name": "comment_id",
                         "in": "path",
                         "required": true
@@ -513,8 +698,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -525,14 +715,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Delete comment by ID",
+                "description": "Delete a comment on a post by comment's ID.\nA non-blog-owner user can only delete their own comment.\nBlog's owner is allowed to delete ANY comment on their posts.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Comment"
                 ],
-                "summary": "Delete comment by ID",
+                "summary": "Delete a comment",
                 "parameters": [
                     {
                         "type": "string",
@@ -543,14 +733,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "post slug",
+                        "description": "post's slug",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "comment ID",
+                        "description": "comment's ID",
                         "name": "comment_id",
                         "in": "path",
                         "required": true
@@ -560,8 +750,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -574,14 +769,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Add post to user's list by providing required data",
+                "description": "Add a post to the current user's list by providing the slug of the list to which the user wants to add the post.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "List"
                 ],
-                "summary": "Add post to my list",
+                "summary": "Add post to current user's list",
                 "parameters": [
                     {
                         "type": "string",
@@ -592,7 +787,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "post slug",
+                        "description": "post's slug",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
@@ -609,8 +804,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -623,7 +829,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Get current user's lists by providing required data",
+                "description": "Get all of current user's lists\nWill return an empty array ([]) if the user has no lists.",
                 "produces": [
                     "application/json"
                 ],
@@ -635,8 +841,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/helpers.MyListResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -647,17 +867,17 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Create a new list for user by providing required data",
+                "description": "Create a new list for current user by providing required data.\nUpon successful creation, it will return the newly created list's slug.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "List"
                 ],
-                "summary": "Create a new list for user",
+                "summary": "Create a new list",
                 "parameters": [
                     {
-                        "description": "body required to create a new list",
+                        "description": "data required to create a new list",
                         "name": "Body",
                         "in": "body",
                         "required": true,
@@ -670,8 +890,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CreateListResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -684,18 +915,18 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Get posts in my list by providing required data",
+                "description": "Get posts in my current user's by providing the list's slug.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "List"
                 ],
-                "summary": "Get posts in my list",
+                "summary": "Get posts in current user's list",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "list slug you want to get",
+                        "description": "slug of the list you want to get the post from",
                         "name": "list_slug",
                         "in": "path",
                         "required": true
@@ -705,8 +936,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helpers.PostsInMyListResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -717,14 +959,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Update current user's list information (name and description) by providing the list ID",
+                "description": "Update/modify current user's list information (name and description) by providing the list's slug.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "List"
                 ],
-                "summary": "Update current user's list by ID",
+                "summary": "Update/modify current user's list information",
                 "parameters": [
                     {
                         "type": "string",
@@ -734,7 +976,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "body to update",
+                        "description": "body required to update/modify list information",
                         "name": "body",
                         "in": "body",
                         "schema": {
@@ -746,8 +988,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -758,18 +1005,18 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Delete current user's list by providing the list ID",
+                "description": "Delete current user's list by providing the list slug",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "List"
                 ],
-                "summary": "Delete current user's list by ID",
+                "summary": "Delete current user's list",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "list slug you want to remove",
+                        "description": "slug of the list you want to remove",
                         "name": "list_slug",
                         "in": "path",
                         "required": true
@@ -779,8 +1026,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -793,14 +1045,14 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Remove post from current user's list by providing the list ID and post slug",
+                "description": "Remove a post from current user's list by providing the list slug and post slug you want to remove.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "List"
                 ],
-                "summary": "Remove post from current user's list",
+                "summary": "Remove a post from current user's list",
                 "parameters": [
                     {
                         "type": "string",
@@ -811,7 +1063,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "post slug you want to delete",
+                        "description": "post slug you want to remove",
                         "name": "post_slug",
                         "in": "path",
                         "required": true
@@ -821,8 +1073,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/helpers.ResponseWithoutDataAndError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ResponseWithError"
                         }
                     }
                 }
@@ -835,7 +1092,7 @@ const docTemplate = `{
                         "BearerToken": []
                     }
                 ],
-                "description": "Get current user's comments on all posts",
+                "description": "Get current user's comments on all posts.",
                 "produces": [
                     "application/json"
                 ],
@@ -847,8 +1104,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helpers.ResponseWithData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CommentResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -943,16 +1211,86 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.BlogResponse": {
+            "type": "object",
+            "properties": {
+                "blog_description": {
+                    "type": "string"
+                },
+                "blog_name": {
+                    "type": "string"
+                },
+                "blog_owner": {
+                    "type": "string"
+                },
+                "num_of_posts": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.CommentRequest": {
             "type": "object",
+            "required": [
+                "comment"
+            ],
             "properties": {
                 "comment": {
                     "type": "string"
                 }
             }
         },
+        "dto.CommentResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "comment_id": {
+                    "type": "integer"
+                },
+                "commenter": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "post_url": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateCommentResponse": {
+            "type": "object",
+            "properties": {
+                "comment_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CreateListResponse": {
+            "type": "object",
+            "properties": {
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreatePostResponse": {
+            "type": "object",
+            "properties": {
+                "post_slug": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ListRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -964,6 +1302,10 @@ const docTemplate = `{
         },
         "dto.LoginRequest": {
             "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
             "properties": {
                 "password": {
                     "type": "string"
@@ -973,8 +1315,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.PostRequest": {
             "type": "object",
+            "required": [
+                "content",
+                "title"
+            ],
             "properties": {
                 "content": {
                     "type": "string"
@@ -984,8 +1338,37 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PostResponse": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "post_slug": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.RegisterRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password",
+                "username"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -994,15 +1377,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 6
                 }
             }
         },
         "dto.UpdateBlogRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -1014,9 +1403,15 @@ const docTemplate = `{
         },
         "dto.UpdatePasswordRequest": {
             "type": "object",
+            "required": [
+                "new_password",
+                "old_password"
+            ],
             "properties": {
                 "new_password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8
                 },
                 "old_password": {
                     "type": "string"
@@ -1025,12 +1420,99 @@ const docTemplate = `{
         },
         "dto.UserUpdateInfoRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "helpers.InputError": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "helpers.MyListResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "list_slug": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "num_of_posts": {
+                    "type": "integer"
+                }
+            }
+        },
+        "helpers.PostsInMyListResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "list_slug": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "posts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PostResponse"
+                    }
+                }
+            }
+        },
+        "helpers.ResponseWithData": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "helpers.ResponseWithError": {
+            "type": "object",
+            "properties": {
+                "error": {},
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "helpers.ResponseWithoutDataAndError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         }

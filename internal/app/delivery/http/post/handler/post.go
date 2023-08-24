@@ -29,15 +29,16 @@ func NewPostHandler(uc postusecase.PostUsecase) PostHandler {
 	}
 }
 
-// @CreateNewPost godoc
-// @Summary Create a new blog post
-// @Description Create a new blog post by providing required data
-// @Tags Post
-// @Param Body body dto.PostRequest true "the body to create a new post"
-// @Security BearerToken
-// @Produce json
-// @Success 201 {object} map[string]any
-// @Router /blog/my/posts [post]
+//	@CreateNewPost	godoc
+//	@Summary		Create a new blog post
+//	@Description	Create a new post on current user's blog.
+//	@Description	Upon successful creation, it will return the newly created post's slug
+//	@Tags			Post
+//	@Param			Body	body	dto.PostRequest	true	"data required to create a new post"
+//	@Security		BearerToken
+//	@Produce		json
+//	@Success		201	{object}	helpers.ResponseWithData{data=dto.CreatePostResponse}
+//	@Router			/blog/my/posts [post]
 func (handler *PostHandlerImpl) CreateNewPost(c *gin.Context) {
 	var data dto.PostRequest
 	username := c.GetString("username")
@@ -62,14 +63,14 @@ func (handler *PostHandlerImpl) CreateNewPost(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusCreated, "create post", nil, resp)
 }
 
-// @GetMyPosts godoc
-// @Summary Get all user's blog posts
-// @Description Get all user's blog posts by providing JWT auth
-// @Tags Post
-// @Security BearerToken
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/my/posts [GET]
+//	@GetMyPosts		godoc
+//	@Summary		Get all current user's blog posts
+//	@Description	Get all current user's blog posts. When there are no posts, it will return an empty array ([]).
+//	@Tags			Post
+//	@Security		BearerToken
+//	@Produce		json
+//	@Success		200	{object}	helpers.ResponseWithData{data=[]dto.PostResponse}
+//	@Router			/blog/my/posts [GET]
 func (handler *PostHandlerImpl) GetAllMyBlogPosts(c *gin.Context) {
 	username := c.GetString("username")
 
@@ -87,14 +88,15 @@ func (handler *PostHandlerImpl) GetAllMyBlogPosts(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusOK, "get my posts", nil, posts)
 }
 
-// @GetUsersBlogPosts godoc
-// @Summary Get all blog posts of a user
-// @Description Get all user's blog posts by providing username
-// @Tags Post
-// @Param username path string true "Username of the user"
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/{username}/posts [GET]
+//	@GetUsersBlogPosts	godoc
+//	@Summary			Get a user's blog posts
+//	@Description		Get user's blog posts by providing their username.
+//	@Tags				Post
+//	@Param				username	path	string	true	"user's username"
+//	@Produce			json
+//	@Success			200	{object}	helpers.ResponseWithData{data=[]dto.PostResponse}
+//	@Failure			404	{object}	helpers.ResponseWithError
+//	@Router				/blog/{username}/posts [GET]
 func (handler *PostHandlerImpl) GetPostsByBlogOwner(c *gin.Context) {
 	username := c.Param("username")
 
@@ -107,15 +109,16 @@ func (handler *PostHandlerImpl) GetPostsByBlogOwner(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusOK, fmt.Sprintf("get %s's posts", username), nil, posts)
 }
 
-// @GetUserPostBySlug godoc
-// @Summary Get a user post by slug
-// @Description Get a user post by providing their username and the post slug
-// @Tags Post
-// @Param username path string true "Username of the user"
-// @Param post_slug path string true "Slug of the post"
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/{username}/posts/{post_slug} [GET]
+//	@GetUserPostBySlug	godoc
+//	@Summary			Get a specific post
+//	@Description		Get a specific post by providing their username and the post's slug.
+//	@Tags				Post
+//	@Param				username	path	string	true	"user's username"
+//	@Param				post_slug	path	string	true	"post's slug"
+//	@Produce			json
+//	@Success			200	{object}	helpers.ResponseWithData{data=dto.PostResponse}
+//	@Failure			404	{object}	helpers.ResponseWithError
+//	@Router				/blog/{username}/posts/{post_slug} [GET]
 func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
 	slug := c.Param("post_slug")
 	username := c.Param("username")
@@ -128,16 +131,17 @@ func (handler *PostHandlerImpl) GetPostBySlug(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusOK, "get post", nil, post)
 }
 
-// @UpdateMyPostBySlug godoc
-// @Summary Update user post by slug
-// @Description Update user blog post by providing the post slug
-// @Tags Post
-// @Security BearerToken
-// @Param Body body dto.PostRequest true "the body to create a new post"
-// @Param post_slug path string true "Slug of the post"
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/my/posts/{post_slug} [PUT]
+//	@UpdateMyPostBySlug	godoc
+//	@Summary			Update/modify current user's post
+//	@Description		Update/modify current user's blog post by providing the post's slug.
+//	@Tags				Post
+//	@Security			BearerToken
+//	@Param				Body		body	dto.PostRequest	true	"data required to update/modify a post"
+//	@Param				post_slug	path	string			true	"post's slug"
+//	@Produce			json
+//	@Success			200	{object}	helpers.ResponseWithoutDataAndError
+//	@Failure			404	{object}	helpers.ResponseWithError
+//	@Router				/blog/my/posts/{post_slug} [PUT]
 func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 	var data dto.PostRequest
 	slug := c.Param("post_slug")
@@ -163,15 +167,16 @@ func (handler *PostHandlerImpl) UpdateMyPostBySlug(c *gin.Context) {
 	helpers.ResponseBuilder(c, http.StatusOK, "update post", nil, nil)
 }
 
-// @DeleteMyPostBySlug godoc
-// @Summary Delete user post by slug
-// @Description Delete user blog post by providing the post slug
-// @Tags Post
-// @Security BearerToken
-// @Param post_slug path string true "Slug of the post"
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/my/posts/{post_slug} [DELETE]
+//	@DeleteMyPostBySlug	godoc
+//	@Summary			Delete current user's post
+//	@Description		Delete current user's blog post by providing the post slug.
+//	@Tags				Post
+//	@Security			BearerToken
+//	@Param				post_slug	path	string	true	"post's slug"
+//	@Produce			json
+//	@Success			200	{object}	helpers.ResponseWithoutDataAndError
+//	@Failure			404	{object}	helpers.ResponseWithError
+//	@Router				/blog/my/posts/{post_slug} [DELETE]
 func (handler *PostHandlerImpl) DeleteMyPostBySlug(c *gin.Context) {
 	slug := c.Param("post_slug")
 	username := c.GetString("username")

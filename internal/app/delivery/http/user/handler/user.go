@@ -26,12 +26,12 @@ func NewUserHandler(usecase userusecase.UserUsecase) UserHandler {
 }
 
 // MyInformation godoc
-// @Summary Get current user information
-// @Description Get user information about current logged in user
-// @Tags User
-// @Security BearerToken
-// @Product 200 {object} map[string]any
-// @Router /users/me [get]
+//	@Summary		Get current user information
+//	@Description	Get user information about current logged in user
+//	@Tags			User
+//	@Security		BearerToken
+//	@Product		200 {object} map[string]any
+//	@Router			/users/me [get]
 func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
 	username := c.GetString("username")
 
@@ -50,14 +50,14 @@ func (handler *UserHandlerImpl) GetMyInformation(c *gin.Context) {
 }
 
 // ChangePassword godoc
-// @Summary Change user password
-// @Description Change user password by providing required data
-// @Tags User
-// @Param Body body dto.UpdatePasswordRequest true "the body to change user's password"
-// @Security BearerToken
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /users/me/update-password [put]
+//	@Summary		Change user password
+//	@Description	Change user password by providing required data
+//	@Tags			User
+//	@Param			Body	body	dto.UpdatePasswordRequest	true	"the body to change user's password"
+//	@Security		BearerToken
+//	@Produce		json
+//	@Success		200	{object}	map[string]any
+//	@Router			/users/me/update-password [put]
 func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
 	var data dto.UpdatePasswordRequest
 	username := c.GetString("username")
@@ -83,14 +83,14 @@ func (handler *UserHandlerImpl) UpdateMyPassword(c *gin.Context) {
 }
 
 // UpdateMyInformation godoc
-// @Summary Update current user's information
-// @Description Update current user's information by providing required data
-// @Tags User
-// @Param Body body dto.UserUpdateInfoRequest true "the body to update user's information"
-// @Security BearerToken
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /users/me [put]
+//	@Summary		Update current user's information
+//	@Description	Update current user's information by providing required data
+//	@Tags			User
+//	@Param			Body	body	dto.UserUpdateInfoRequest	true	"the body to update user's information"
+//	@Security		BearerToken
+//	@Produce		json
+//	@Success		200	{object}	map[string]any
+//	@Router			/users/me [put]
 func (handler *UserHandlerImpl) UpdateMyInformation(c *gin.Context) {
 	var data dto.UserUpdateInfoRequest
 	username := c.GetString("username")

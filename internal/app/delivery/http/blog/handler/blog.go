@@ -27,14 +27,14 @@ func NewBlogHandler(uc blogusecase.BlogUsecase) BlogHandler {
 }
 
 // UpdateMyBlog godoc
-// @Summary Change user's blog name
-// @Description Change user's blog name by providing required data
-// @Tags Blog
-// @Param Body body dto.UpdateBlogRequest true "the body to change user's blog name"
-// @Security BearerToken
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/my [put]
+//	@Summary		Change current user's blog information
+//	@Description	Change current user's blog name and description.
+//	@Tags			Blog
+//	@Param			Body	body	dto.UpdateBlogRequest	true	"data required to change user's blog information"
+//	@Security		BearerToken
+//	@Produce		json
+//	@Success		200	{object}	helpers.ResponseWithoutDataAndError
+//	@Router			/blog/my [put]
 func (handler *BlogHandlerImpl) UpdateBlogData(c *gin.Context) {
 	var blog dto.UpdateBlogRequest
 	username := c.GetString("username")
@@ -60,13 +60,13 @@ func (handler *BlogHandlerImpl) UpdateBlogData(c *gin.Context) {
 }
 
 // GetMyBlog godoc
-// @Summary Get my blog information
-// @Description Get information about my blog
-// @Tags Blog
-// @Security BearerToken
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/my [get]
+//	@Summary		Get current user's blog information
+//	@Description	Get current user's blog information (name, description, number of posts).
+//	@Tags			Blog
+//	@Security		BearerToken
+//	@Produce		json
+//	@Success		200	{object}	helpers.ResponseWithData{data=dto.BlogResponse}
+//	@Router			/blog/my [get]
 func (handler *BlogHandlerImpl) GetMyBlog(c *gin.Context) {
 	username := c.GetString("username")
 	if username == "" {
@@ -84,13 +84,14 @@ func (handler *BlogHandlerImpl) GetMyBlog(c *gin.Context) {
 }
 
 // GetUserBlog godoc
-// @Summary Get user blog information
-// @Description Get information about user blog
-// @Tags Blog
-// @Param username path string true "Username of the user"
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /blog/{username} [get]
+//	@Summary		Get user's blog information
+//	@Description	Get user's blog information (name, description, number of posts) by providing their username.
+//	@Tags			Blog
+//	@Param			username	path	string	true	"Username of the user"
+//	@Produce		json
+//	@Success		200	{object}	helpers.ResponseWithData{data=dto.BlogResponse}
+//	@Failure		404	{object}	helpers.ResponseWithError{error=string}
+//	@Router			/blog/{username} [get]
 func (handler *BlogHandlerImpl) GetBlogByOwner(c *gin.Context) {
 	owner := c.Param("username")
 

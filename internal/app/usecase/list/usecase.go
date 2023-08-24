@@ -82,6 +82,9 @@ func (uc *ListUsecaseImpl) AddPostToMyList(ctx context.Context, listSlug, userna
 
 	err = uc.listRepo.AddPostToList(ctx, *post, *list)
 	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return helpers.ErrorBuilder(http.StatusConflict, "this post is already in this list!")
+		}
 		uc.logger.ErrorContext(ctx, err.Error())
 		return helpers.ErrorBuilder(http.StatusInternalServerError, "it's our fault, not yours")
 	}
