@@ -9,4 +9,5 @@ type BlogResponse struct {
 	Name        string `json:"blog_name"`
 	Description string `json:"blog_description"`
 	Owner       string `json:"blog_owner"`
+	NumOfPosts  int    `json:"num_of_posts"`
 }

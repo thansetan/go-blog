@@ -26,7 +26,7 @@ func (repo *BlogRepositoryImpl) Create(ctx context.Context, data model.Blog, tx 
 func (repo *BlogRepositoryImpl) FindByOwner(ctx context.Context, owner string) (*model.Blog, error) {
 	blog := new(model.Blog)
 
-	err := repo.db.WithContext(ctx).Preload("User").First(blog, "owner = ?", owner).Error
+	err := repo.db.WithContext(ctx).Preload("User").Preload("Posts").First(blog, "owner = ?", owner).Error
 	if err != nil {
 		return nil, err
 	}

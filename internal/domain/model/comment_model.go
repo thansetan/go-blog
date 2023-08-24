@@ -11,6 +11,6 @@ type Comment struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	User User `gorm:"foreignKey:Commenter; references:Username"`
-	Post Post `gorm:"foreignKey:PostID; references:ID"`
+	User User `gorm:"foreignKey:Commenter;references:Username"`
+	Post Post `gorm:"foreignKey:PostID; references:ID;constraint:OnDelete:CASCADE"`
 }

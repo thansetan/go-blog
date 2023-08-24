@@ -51,7 +51,7 @@ func (uc *PostUsecaseImpl) CreateNewPost(ctx context.Context, username string, d
 }
 
 func (uc *PostUsecaseImpl) GetPostsByBlogOwner(ctx context.Context, username string) ([]dto.PostResponse, error) {
-	var postsData []dto.PostResponse
+	postsData := make([]dto.PostResponse, 0)
 
 	blog, err := uc.blogRepo.FindByOwner(ctx, username)
 	if err != nil {

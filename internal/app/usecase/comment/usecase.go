@@ -51,7 +51,7 @@ func (uc *CommentUsecaseImpl) CreateComment(ctx context.Context, data dto.Commen
 }
 
 func (uc *CommentUsecaseImpl) GetCommentByUsername(ctx context.Context, username string) ([]dto.CommentResponse, error) {
-	var commentsData []dto.CommentResponse
+	commentsData := make([]dto.CommentResponse, 0)
 
 	comments, err := uc.commentRepo.FindCommentByUsername(ctx, username)
 	if err != nil {
@@ -72,7 +72,7 @@ func (uc *CommentUsecaseImpl) GetCommentByUsername(ctx context.Context, username
 }
 
 func (uc *CommentUsecaseImpl) GetCommentByBlogOwnerAndPostSlug(ctx context.Context, blogOwner, postSlug string) ([]dto.CommentResponse, error) {
-	var commentsData []dto.CommentResponse
+	commentsData := make([]dto.CommentResponse, 0)
 
 	post, err := uc.postRepo.FindBySlugAndOwner(ctx, postSlug, blogOwner)
 	if err != nil {

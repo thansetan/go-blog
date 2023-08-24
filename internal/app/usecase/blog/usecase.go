@@ -7,7 +7,7 @@ import (
 )
 
 type BlogUsecase interface {
-	UpdateBlogName(ctx context.Context, username string, data dto.UpdateBlogRequest) error
+	UpdateBlogData(ctx context.Context, username string, data dto.UpdateBlogRequest) error
 	GetBlogByOwner(ctx context.Context, owner string) (*dto.BlogResponse, error)
 }
 
@@ -21,7 +21,7 @@ func NewBlogUsecase(repo repository.BlogRepository) BlogUsecase {
 	}
 }
 
-func (uc *BlogUsecaseImpl) UpdateBlogName(ctx context.Context, username string, data dto.UpdateBlogRequest) error {
+func (uc *BlogUsecaseImpl) UpdateBlogData(ctx context.Context, username string, data dto.UpdateBlogRequest) error {
 	blog, err := uc.repo.FindByOwner(ctx, username)
 	if err != nil {
 		return err
@@ -48,6 +48,7 @@ func (uc *BlogUsecaseImpl) GetBlogByOwner(ctx context.Context, owner string) (*d
 		Name:        blog.Name,
 		Owner:       blog.Owner,
 		Description: blog.Description,
+		NumOfPosts:  len(blog.Posts),
 	}
 	return &data, nil
 }

@@ -11,5 +11,6 @@ type Blog struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	User User `gorm:"foreignKey:Owner;references:Username"`
+	Posts []Post
+	User  User `gorm:"foreignKey:Owner;references:Username"`
 }
